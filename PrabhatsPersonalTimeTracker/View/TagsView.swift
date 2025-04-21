@@ -94,6 +94,7 @@ struct TagRow: View {
                 } else {
                     Text(tag.name)
                             .font(.title3)
+                            .padding(.leading, 20)
                 }
                 
                 
@@ -103,22 +104,17 @@ struct TagRow: View {
             }
             .padding(.leading, CGFloat(level * 20))
             
-            
-            Button(action: {
-                // Action to be implemented
-            }) {
-                Image(systemName: "play.circle.fill")
-                    .foregroundColor(tag.color.color)
-                    .font(.title3)
-            }
-            .buttonStyle(.plain)
-            
             Spacer()
             
-            if !tag.children.isEmpty {
-                Text("\(tag.children.count)")
-                    .foregroundColor(.secondary)
-            }
+            // Button(action: {
+            //     // Action to be implemented
+            // }) {
+            //     Image(systemName: "play.circle.fill")
+            //         .foregroundColor(tag.color.color)
+            //         .font(.title3)
+            // }
+            // .buttonStyle(.plain)
+            
         }
         .contentShape(Rectangle())
         
