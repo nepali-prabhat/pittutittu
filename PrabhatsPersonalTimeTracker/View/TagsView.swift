@@ -65,6 +65,7 @@ struct TagRow: View {
     let level: Int
     @Binding var collapsedTags: Set<UUID>
     var onColorChange: ((CatppuccinFrappe) -> Void)?
+    @State private var isHovered = false
     
     private var isCollapsed: Bool {
         collapsedTags.contains(tag.id)
@@ -78,6 +79,27 @@ struct TagRow: View {
         }
     }
     
+    @ViewBuilder
+    private var tagActions: some View {
+        Button(action: {
+            // Play action
+        }) {
+            Label("Start Timer", systemImage: "play.circle.fill")
+        }
+        
+        Button(action: {
+            // Edit action
+        }) {
+            Label("Edit", systemImage: "pencil.circle.fill")
+        }
+        
+        Button(role: .destructive, action: {
+            // Delete action
+        }) {
+            Label("Delete", systemImage: "trash.circle.fill")
+        }
+    }
+    
     var body: some View {
         HStack {
             HStack {
@@ -86,37 +108,52 @@ struct TagRow: View {
                         Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
                             .foregroundColor(.secondary)
                             .font(.caption)
-                        
                         Text(tag.name)
                             .font(.title3)
                     }
                     .buttonStyle(.plain)
                 } else {
+                    Spacer()
+                        .frame(width: 20)
                     Text(tag.name)
                             .font(.title3)
-                            .padding(.leading, 20)
                 }
-                
-                
-                
-                
-                // Text(tag.id.uuidString.prefix(8))
             }
             .padding(.leading, CGFloat(level * 20))
+
+            // if isHovered {
+            //     Button(action: {
+            //         // play action
+            //     }) {
+            //         Image(systemName: "play.circle.fill")
+            //             .font(.title3)
+            //             .foregroundColor(.accentColor)
+            //     }
+            //     .buttonStyle(.plain)
+            // }
             
             Spacer()
             
-            // Button(action: {
-            //     // Action to be implemented
-            // }) {
-            //     Image(systemName: "play.circle.fill")
-            //         .foregroundColor(tag.color.color)
-            //         .font(.title3)
+            // if isHovered {
+            //     Menu {
+            //         tagActions
+            //     } label: {
+            //         Image(systemName: "ellipsis.circle")
+            //             .foregroundColor(.secondary)
+            //             .font(.caption)
+            //     }
+            //     .menuStyle(.borderlessButton)
+            //     .fixedSize()
             // }
-            // .buttonStyle(.plain)
-            
         }
         .contentShape(Rectangle())
+        .onHover { hovering in
+            isHovered = hovering
+        }
+        .contextMenu {
+            tagActions
+        }
+        .listRowSeparator(.hidden)
         
         if !tag.children.isEmpty && !isCollapsed {
             ForEach(tag.children) { child in
