@@ -100,6 +100,10 @@ struct TagsView: View {
                     }
                 )
             }
+            .onAppear {
+                exportText = viewModel.exportTags()
+            }
         }
     }
 } 
+

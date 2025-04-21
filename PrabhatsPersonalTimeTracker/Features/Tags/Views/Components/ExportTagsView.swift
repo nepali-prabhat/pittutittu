@@ -14,6 +14,9 @@ struct ExportTagsView: View {
                     .padding()
                     .border(Color.gray.opacity(0.2))
                     .disabled(true)
+                    .onAppear {
+                        print("ExportTagsView text: \(text)")
+                    }
                 
                 Button("Copy to Clipboard") {
                     NSPasteboard.general.clearContents()
@@ -34,3 +37,23 @@ struct ExportTagsView: View {
         }
     }
 } 
+
+
+#Preview {
+    ExportTagsView(
+        text: """
+        {
+          "name": "Work",
+          "color": "blue",
+          "children": [
+            {
+              "name": "Meetings",
+              "color": "red",
+              "children": []
+            }
+          ]
+        }
+        """,
+        onDone: {}
+    )
+}
