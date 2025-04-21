@@ -22,6 +22,32 @@ class TagsViewModel: ObservableObject {
         }
     }
     
+    func importTags(from string: String) {
+        let newTags = TagParser.parse(string)
+        
+        // Clear existing tags
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = TagEntity.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        
+        do {
+            try context.execute(deleteRequest)
+            
+            // Save new tags
+            for tag in newTags {
+                _ = tag.toEntity(in: context)
+            }
+            
+            CoreDataManager.shared.saveContext()
+            loadTags()
+        } catch {
+            print("Error importing tags: \(error)")
+        }
+    }
+    
+    func exportTags() -> String {
+        return TagParser.export(tags)
+    }
+    
     func addTag(name: String, color: CatppuccinFrappe, parentId: UUID?) {
         let newTag = Tag(name: name, color: color)
         

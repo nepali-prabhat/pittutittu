@@ -23,4 +23,4 @@ enum CatppuccinFrappe: String, CaseIterable {
     static var allColors: [Color] {
         allCases.map { $0.color }
     }
-} 
+}

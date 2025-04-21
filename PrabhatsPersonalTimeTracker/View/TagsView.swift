@@ -7,6 +7,10 @@ struct TagsView: View {
     @State private var newTagName = ""
     @State private var selectedColor: CatppuccinFrappe = .blue
     @State private var collapsedTags: Set<UUID> = []
+    @State private var showingImportSheet = false
+    @State private var importText = ""
+    @State private var showingExportSheet = false
+    @State private var exportText = ""
     
     var body: some View {
         NavigationStack {
@@ -35,6 +39,21 @@ struct TagsView: View {
                         Label("Add Tag", systemImage: "plus")
                     }
                 }
+                ToolbarItem(placement: .automatic) {
+                    Button(action: {
+                        showingImportSheet = true
+                    }) {
+                        Label("Import", systemImage: "square.and.arrow.down")
+                    }
+                }
+                ToolbarItem(placement: .automatic) {
+                    Button(action: {
+                        exportText = viewModel.exportTags()
+                        showingExportSheet = true
+                    }) {
+                        Label("Export", systemImage: "square.and.arrow.up")
+                    }
+                }
             }
             .sheet(isPresented: $showingAddTagSheet) {
                 NavigationStack {
@@ -60,6 +79,63 @@ struct TagsView: View {
                                 selectedColor = .blue
                             }
                             .disabled(newTagName.isEmpty)
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $showingImportSheet) {
+                NavigationStack {
+                    VStack {
+                        TextEditor(text: $importText)
+                            .font(.body.monospaced())
+                            .frame(minHeight: 200)
+                            .padding()
+                            .border(Color.gray.opacity(0.2))
+                        
+                        Button("Import") {
+                            viewModel.importTags(from: importText)
+                            showingImportSheet = false
+                            importText = ""
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(importText.isEmpty)
+                    }
+                    .padding()
+                    .navigationTitle("Import Tags")
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") {
+                                showingImportSheet = false
+                                importText = ""
+                            }
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $showingExportSheet) {
+                NavigationStack {
+                    VStack {
+                        TextEditor(text: .constant(exportText))
+                            .font(.body.monospaced())
+                            .frame(minHeight: 200)
+                            .padding()
+                            .border(Color.gray.opacity(0.2))
+                            .disabled(true)
+                        
+                        Button("Copy to Clipboard") {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(exportText, forType: .string)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                    .padding()
+                    .navigationTitle("Export Tags")
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") {
+                                showingExportSheet = false
+                                exportText = ""
+                            }
                         }
                     }
                 }
