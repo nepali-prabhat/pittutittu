@@ -13,5 +13,6 @@ struct PrabhatsPersonalTimeTrackerApp: App {
         WindowGroup {
             ContentView()
         }
+        .windowStyle(HiddenTitleBarWindowStyle())
     }
 }
