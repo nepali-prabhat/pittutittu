@@ -135,8 +135,11 @@ struct TagRow: View {
         .contextMenu {
             tagActions
         }
-        .listRowSeparator(.hidden)
-        .background(isTargeted ? Color.accentColor.opacity(0.1) : Color.clear)
+        // .listRowSeparator(.hidden)
+        .background(
+            RoundedRectangle(cornerRadius: 4)
+                .fill(isTargeted ? Color.accentColor.opacity(0.1) : isHovered ? Color.secondary.opacity(0.1) : Color.clear)
+        )
         .opacity(isDragging ? 0.5 : 1.0)
         .onDrop(of: [.text], isTargeted: $isTargeted) { providers in
             // Reset dragging state
@@ -185,3 +188,29 @@ struct TagRow: View {
         }
     }
 } 
+
+#Preview {
+    let previewTag = Tag(
+        id: UUID(),
+        name: "Work",
+        color: .blue,
+        children: [
+            Tag(id: UUID(), name: "Meetings", color: .red),
+            Tag(id: UUID(), name: "Projects", color: .green, children: [
+                Tag(id: UUID(), name: "Project A", color: .yellow)
+            ])
+        ]
+    )
+    
+    return TagRow(
+        tag: previewTag,
+        level: 0,
+        collapsedTags: .constant([]),
+        selectedParentId: .constant(nil),
+        showingAddTagSheet: .constant(false),
+        viewModel: TagsViewModel(),
+        onColorChange: { _ in },
+        onDelete: { _ in },
+        onEdit: { _ in }
+    )
+}
