@@ -121,6 +121,11 @@ struct TagRow: View {
                             .foregroundColor(.secondary)
                     }.buttonStyle(.accessoryBar)
                 }
+                
+                Rectangle()
+                    .fill(tag.color.color)
+                    .frame(width: 12, height: 12)
+                    .cornerRadius(2)
                 Text(tag.name)
                     .font(.title3)
             }
