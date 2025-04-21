@@ -136,4 +136,19 @@ class TagsViewModel: ObservableObject {
         
         return false
     }
+    
+    func deleteTag(tagId: UUID) {
+        let fetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", tagId as CVarArg)
+        
+        do {
+            if let entity = try context.fetch(fetchRequest).first {
+                context.delete(entity)
+                CoreDataManager.shared.saveContext()
+                loadTags()
+            }
+        } catch {
+            print("Error deleting tag: \(error)")
+        }
+    }
 } 

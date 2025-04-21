@@ -11,6 +11,7 @@ struct TagsView: View {
     @State private var importText = ""
     @State private var showingExportSheet = false
     @State private var exportText = ""
+    @State private var tagToDelete: Tag?
     
     var body: some View {
         NavigationStack {
@@ -25,6 +26,9 @@ struct TagsView: View {
                                viewModel: viewModel, 
                                onColorChange: { newColor in
                             viewModel.updateTagColor(tagId: tag.id, color: newColor)
+                        },
+                               onDelete: { tag in
+                            tagToDelete = tag
                         })
                     }
                 }
@@ -140,6 +144,40 @@ struct TagsView: View {
                     }
                 }
             }
+            .sheet(item: $tagToDelete) { tag in
+                NavigationStack {
+                    VStack(spacing: 20) {
+                        Text("Delete Tag")
+                            .font(.title)
+                            .padding(.top)
+                        
+                        Text("Are you sure you want to delete '\(tag.name)'?")
+                            .font(.body)
+                        
+                        if !tag.children.isEmpty {
+                            Text("This will also delete \(tag.children.count) child tag(s).")
+                                .font(.body)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack(spacing: 20) {
+                            Button("Cancel") {
+                                tagToDelete = nil
+                            }
+                            .buttonStyle(.bordered)
+                            
+                            Button("Delete", role: .destructive) {
+                                viewModel.deleteTag(tagId: tag.id)
+                                tagToDelete = nil
+                            }
+                            .buttonStyle(.borderedProminent)
+                        }
+                        .padding(.top)
+                    }
+                    .padding()
+                    .frame(minWidth: 300)
+                }
+            }
         }
     }
 }
@@ -152,6 +190,7 @@ struct TagRow: View {
     @Binding var showingAddTagSheet: Bool
     let viewModel: TagsViewModel
     var onColorChange: ((CatppuccinFrappe) -> Void)?
+    var onDelete: ((Tag) -> Void)?
     @State private var isHovered = false
     @State private var isTargeted = false
     @State private var isDragging = false
@@ -215,12 +254,8 @@ struct TagRow: View {
         }) {
             Label("Start Timer", systemImage: "play.circle.fill")
         }
-        
-        Button(action: {
-            // Edit action
-        }) {
-            Label("Edit", systemImage: "pencil.circle.fill")
-        }
+
+         Divider()
         
         Button(action: {
             selectedParentId = tag.id
@@ -228,12 +263,19 @@ struct TagRow: View {
         }) {
             Label("Add Child Tag", systemImage: "plus.circle.fill")
         }
+
+        Button(action: {
+            // Edit action
+        }) {
+            Label("Edit", systemImage: "pencil.circle.fill")
+        }
         
         Button(role: .destructive, action: {
-            // Delete action
+            onDelete?(tag)
         }) {
             Label("Delete", systemImage: "trash.circle.fill")
         }
+        
         if !tag.children.isEmpty {
             Divider()
             Button(action: toggleCollapse) {
@@ -313,7 +355,7 @@ struct TagRow: View {
         
         if !tag.children.isEmpty && !isCollapsed {
             ForEach(tag.children) { child in
-                TagRow(tag: child, level: level + 1, collapsedTags: $collapsedTags, selectedParentId: $selectedParentId, showingAddTagSheet: $showingAddTagSheet, viewModel: viewModel, onColorChange: onColorChange)
+                TagRow(tag: child, level: level + 1, collapsedTags: $collapsedTags, selectedParentId: $selectedParentId, showingAddTagSheet: $showingAddTagSheet, viewModel: viewModel, onColorChange: onColorChange, onDelete: onDelete)
             }
         }
     }
