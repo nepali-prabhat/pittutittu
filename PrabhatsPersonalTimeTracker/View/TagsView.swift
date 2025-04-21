@@ -259,16 +259,13 @@ struct TagRow: View {
                         Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
                             .foregroundColor(.secondary)
                             // .font(.caption)
-                            .padding(.horizontal, 6)
-                    }.buttonStyle(.borderless)
-                } else {
-                    Spacer()
-                        .frame(width: 25)
+                            // .padding(.horizontal, 6)
+                    }.buttonStyle(.accessoryBar)
                 }
                 Text(tag.name)
                     .font(.title3)
             }
-            .padding(.leading, CGFloat(level * 20))
+            .padding(.leading, CGFloat(level * 32))
             
             Spacer()
         }
