@@ -2,65 +2,89 @@ import Foundation
 
 class TagParser {
     private class TagNode {
-        let tag: Tag
+        var tag: Tag
         let indent: Int
+        var children: [TagNode]
         
         init(tag: Tag, indent: Int) {
             self.tag = tag
             self.indent = indent
+            self.children = []
         }
     }
     
     static func parse(_ string: String) -> [Tag] {
-        var tags: [Tag] = []
-        var currentIndent = 0
+        var rootNodes: [TagNode] = []
         var parentStack: [TagNode] = []
         
         let lines = string.components(separatedBy: .newlines)
             .filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
         
+        print("Parsing \(lines.count) lines")
+        
         for line in lines {
-            let trimmedLine = line.trimmingCharacters(in: .whitespaces)
             let indent = line.prefix(while: { $0 == " " }).count / 2
-            let content = trimmedLine
+            let content = line.trimmingCharacters(in: .whitespaces)
             
             // Parse name, uuid, and color
             let (name, uuid, color) = parseTagContent(content)
             
-            var tag = Tag(
+            print("Processing line: '\(line)'")
+            print("  Indent: \(indent)")
+            print("  Name: \(name)")
+            print("  UUID: \(uuid)")
+            print("  Color: \(color)")
+            
+            let tag = Tag(
                 id: uuid,
                 name: name,
                 color: color
             )
             
+            let node = TagNode(tag: tag, indent: indent)
+            
             // Handle indentation and parent-child relationships
-            if indent > currentIndent {
-                // This is a child of the previous tag
-                if let parent = parentStack.last {
-                    var parentTag = parent.tag
-                    parentTag.children.append(tag)
-                    tag = parentTag
-                }
-            } else {
-                // This is a sibling or parent of a previous tag
-                while let parent = parentStack.last, parent.indent >= indent {
-                    parentStack.removeLast()
-                }
-                
-                if let parent = parentStack.last {
-                    var parentTag = parent.tag
-                    parentTag.children.append(tag)
-                    tag = parentTag
-                } else {
-                    tags.append(tag)
-                }
+            while let lastParent = parentStack.last, lastParent.indent >= indent {
+                print("  Popping parent with indent \(lastParent.indent)")
+                parentStack.removeLast()
             }
             
-            parentStack.append(TagNode(tag: tag, indent: indent))
-            currentIndent = indent
+            if let parent = parentStack.last {
+                print("  Adding as child to parent: \(parent.tag.name)")
+                parent.children.append(node)
+            } else {
+                print("  Adding as root tag")
+                rootNodes.append(node)
+            }
+            
+            // Push the current tag onto the stack
+            parentStack.append(node)
+            print("  Current stack size: \(parentStack.count)")
+        }
+        
+        // Convert the node hierarchy to tag hierarchy
+        func convertNodeToTag(_ node: TagNode) -> Tag {
+            var tag = node.tag
+            tag.children = node.children.map { convertNodeToTag($0) }
+            return tag
+        }
+        
+        let tags = rootNodes.map { convertNodeToTag($0) }
+        
+        print("Final tag count: \(tags.count)")
+        for tag in tags {
+            printTag(tag, indent: 0)
         }
         
         return tags
+    }
+    
+    private static func printTag(_ tag: Tag, indent: Int) {
+        let indentStr = String(repeating: "  ", count: indent)
+        print("\(indentStr)Tag: \(tag.name) (children: \(tag.children.count))")
+        for child in tag.children {
+            printTag(child, indent: indent + 1)
+        }
     }
     
     private static func parseTagContent(_ content: String) -> (name: String, uuid: UUID, color: CatppuccinFrappe) {
@@ -72,7 +96,10 @@ class TagParser {
             return (content, UUID(), .blue)
         }
         
-        let name = String(content[Range(match.range(at: 1), in: content)!]).trimmingCharacters(in: .whitespaces)
+        let name = String(content[Range(match.range(at: 1), in: content)!])
+            .trimmingCharacters(in: .whitespaces)
+            .replacingOccurrences(of: "^\\s*-\\s*", with: "", options: .regularExpression)
+        
         let uuidString = match.range(at: 2).location != NSNotFound ? 
             String(content[Range(match.range(at: 2), in: content)!]).trimmingCharacters(in: .whitespaces) : nil
         let colorString = match.range(at: 3).location != NSNotFound ? 
