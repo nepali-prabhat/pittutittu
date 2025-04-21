@@ -72,6 +72,22 @@ class TagsViewModel: ObservableObject {
         }
     }
     
+    func updateTag(tagId: UUID, name: String, color: CatppuccinFrappe) {
+        let fetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", tagId as CVarArg)
+        
+        do {
+            if let entity = try context.fetch(fetchRequest).first {
+                entity.name = name
+                entity.color = color.rawValue
+                CoreDataManager.shared.saveContext()
+                loadTags()
+            }
+        } catch {
+            print("Error updating tag: \(error)")
+        }
+    }
+    
     func updateTagColor(tagId: UUID, color: CatppuccinFrappe) {
         let fetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@", tagId as CVarArg)

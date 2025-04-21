@@ -9,6 +9,7 @@ struct TagRow: View {
     let viewModel: TagsViewModel
     var onColorChange: ((CatppuccinFrappe) -> Void)?
     var onDelete: ((Tag) -> Void)?
+    var onEdit: ((Tag) -> Void)?
     @State private var isHovered = false
     @State private var isTargeted = false
     @State private var isDragging = false
@@ -83,7 +84,7 @@ struct TagRow: View {
         }
         
         Button(action: {
-            // Edit action
+            onEdit?(tag)
         }) {
             Label("Edit", systemImage: "pencil.circle.fill")
         }
@@ -178,7 +179,8 @@ struct TagRow: View {
                        showingAddTagSheet: $showingAddTagSheet,
                        viewModel: viewModel, 
                        onColorChange: onColorChange,
-                       onDelete: onDelete)
+                       onDelete: onDelete,
+                       onEdit: onEdit)
             }
         }
     }

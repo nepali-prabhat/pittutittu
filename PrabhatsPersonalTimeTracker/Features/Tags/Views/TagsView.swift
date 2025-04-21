@@ -12,6 +12,9 @@ struct TagsView: View {
     @State private var showingExportSheet = false
     @State private var exportText = ""
     @State private var tagToDelete: Tag?
+    @State private var tagToEdit: Tag?
+    @State private var editTagName = ""
+    @State private var editTagColor: CatppuccinFrappe = .blue
     
     var body: some View {
         NavigationStack {
@@ -29,6 +32,11 @@ struct TagsView: View {
                         },
                                onDelete: { tag in
                             tagToDelete = tag
+                        },
+                               onEdit: { tag in
+                            tagToEdit = tag
+                            editTagName = tag.name
+                            editTagColor = tag.color
                         })
                     }
                 }
@@ -97,6 +105,16 @@ struct TagsView: View {
                     },
                     onCancel: {
                         tagToDelete = nil
+                    }
+                )
+            }
+            .sheet(item: $tagToEdit) { tag in
+                EditTagView(
+                    name: $editTagName,
+                    color: $editTagColor,
+                    onSave: {
+                        viewModel.updateTag(tagId: tag.id, name: editTagName, color: editTagColor)
+                        tagToEdit = nil
                     }
                 )
             }
