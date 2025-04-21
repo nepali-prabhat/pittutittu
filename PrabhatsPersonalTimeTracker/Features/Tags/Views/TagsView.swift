@@ -40,30 +40,85 @@ struct TagsView: View {
                         })
                     }
                 }
+                .contextMenu(forSelectionType: Tag.self) { items in
+                    // This is needed to prevent the default context menu
+                } primaryAction: { items in
+                    // This is needed to prevent the default context menu
+                }
             }
             .navigationTitle("Tags")
+            .contextMenu {
+                Button(action: {
+                    selectedParentId = nil
+                    showingAddTagSheet = true
+                }) {
+                    Label("Add Tag", systemImage: "plus")
+                }
+                
+                Button(role: .destructive, action: {
+                    // Delete all tags
+                    let fetchRequest: NSFetchRequest<NSFetchRequestResult> = TagEntity.fetchRequest()
+                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+                    
+                    do {
+                        try viewModel.context.execute(deleteRequest)
+                        CoreDataManager.shared.saveContext()
+                        viewModel.loadTags()
+                    } catch {
+                        print("Error deleting all tags: \(error)")
+                    }
+                }) {
+                    Label("Delete All Tags", systemImage: "trash")
+                }
+                
+                Divider()
+                
+                Button(action: {
+                    collapsedTags.removeAll()
+                }) {
+                    Label("Expand All", systemImage: "chevron.down.2")
+                }
+                
+                Button(action: {
+                    var allIds = Set<UUID>()
+                    for tag in viewModel.tags {
+                        func collectIds(_ tag: Tag) {
+                            allIds.insert(tag.id)
+                            for child in tag.children {
+                                collectIds(child)
+                            }
+                        }
+                        collectIds(tag)
+                    }
+                    collapsedTags = allIds
+                }) {
+                    Label("Collapse All", systemImage: "chevron.up.2")
+                }
+            }
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItem(placement: .automatic) {
+                    ImportExportMenu(
+                        showingImportSheet: $showingImportSheet,
+                        showingExportSheet: $showingExportSheet,
+                        importText: $importText,
+                        exportText: $exportText,
+                        onExport: { viewModel.exportTags() }
+                    )
+                }
+                
+                ToolbarItem(placement: .automatic) {
+                    ExpandCollapseMenu(
+                        collapsedTags: $collapsedTags,
+                        tags: viewModel.tags
+                    )
+                }
+
+                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
                         selectedParentId = nil
                         showingAddTagSheet = true
                     }) {
                         Label("Add Tag", systemImage: "plus")
-                    }
-                }
-                ToolbarItem(placement: .automatic) {
-                    Button(action: {
-                        showingImportSheet = true
-                    }) {
-                        Label("Import", systemImage: "square.and.arrow.down")
-                    }
-                }
-                ToolbarItem(placement: .automatic) {
-                    Button(action: {
-                        exportText = viewModel.exportTags()
-                        showingExportSheet = true
-                    }) {
-                        Label("Export", systemImage: "square.and.arrow.up")
                     }
                 }
             }
