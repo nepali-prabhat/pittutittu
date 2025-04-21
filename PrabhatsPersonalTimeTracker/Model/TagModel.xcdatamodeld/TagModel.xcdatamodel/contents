@@ -3,6 +3,7 @@
     <entity name="TagEntity" representedClassName="TagEntity" syncable="YES" codeGenerationType="class">
         <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="index" optional="NO" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TagEntity" inverseName="parent" inverseEntity="TagEntity"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TagEntity" inverseName="children" inverseEntity="TagEntity"/>

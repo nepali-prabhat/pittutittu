@@ -158,6 +158,9 @@ struct TagRow: View {
                     DispatchQueue.main.async {
                         if viewModel.canMoveTag(tagId: draggedTagId, toParentId: tag.id) {
                             viewModel.moveTag(tagId: draggedTagId, newParentId: tag.id)
+                        } else if let draggedTag = viewModel.tags.first(where: { $0.id == draggedTagId }) {
+                            // If we can't move to a new parent, try to reorder within the same parent
+                            viewModel.reorderTag(tagId: draggedTagId, newIndex: tag.index)
                         }
                     }
                 }

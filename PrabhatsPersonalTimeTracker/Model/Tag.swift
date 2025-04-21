@@ -6,12 +6,14 @@ struct Tag: Identifiable {
     var name: String
     var color: CatppuccinFrappe
     var children: [Tag]
+    var index: Int
     
-    init(id: UUID = UUID(), name: String, color: CatppuccinFrappe, children: [Tag] = []) {
+    init(id: UUID = UUID(), name: String, color: CatppuccinFrappe, children: [Tag] = [], index: Int = 0) {
         self.id = id
         self.name = name
         self.color = color
         self.children = children
+        self.index = index
     }
     
     init(from entity: TagEntity) {
@@ -19,6 +21,7 @@ struct Tag: Identifiable {
         self.name = entity.name ?? ""
         self.color = CatppuccinFrappe(rawValue: entity.color ?? "") ?? .blue
         self.children = (entity.children?.allObjects as? [TagEntity])?.map { Tag(from: $0) } ?? []
+        self.index = Int(entity.index)
     }
     
     func toEntity(in context: NSManagedObjectContext) -> TagEntity {
@@ -26,6 +29,7 @@ struct Tag: Identifiable {
         entity.id = id
         entity.name = name
         entity.color = color.rawValue
+        entity.index = Int32(index)
         
         // Handle children
         for child in children {

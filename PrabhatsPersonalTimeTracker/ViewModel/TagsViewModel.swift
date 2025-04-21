@@ -113,13 +113,56 @@ class TagsViewModel: ObservableObject {
                 parentFetchRequest.predicate = NSPredicate(format: "id == %@", newParentId as CVarArg)
                 
                 if let newParentEntity = try context.fetch(parentFetchRequest).first {
+                    // Get all children of the new parent
+                    let childrenFetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+                    childrenFetchRequest.predicate = NSPredicate(format: "parent == %@", newParentEntity)
+                    childrenFetchRequest.sortDescriptors = [NSSortDescriptor(key: "index", ascending: true)]
+                    
+                    let siblings = try context.fetch(childrenFetchRequest)
+                    
+                    // Set the new index to be at the end
+                    tagEntity.index = Int32(siblings.count)
                     tagEntity.parent = newParentEntity
+                    
                     CoreDataManager.shared.saveContext()
                     loadTags()
                 }
             }
         } catch {
             print("Error moving tag: \(error)")
+        }
+    }
+    
+    func reorderTag(tagId: UUID, newIndex: Int) {
+        let fetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", tagId as CVarArg)
+        
+        do {
+            if let tagEntity = try context.fetch(fetchRequest).first,
+               let parent = tagEntity.parent {
+                // Get all siblings
+                let siblingsFetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+                siblingsFetchRequest.predicate = NSPredicate(format: "parent == %@", parent)
+                siblingsFetchRequest.sortDescriptors = [NSSortDescriptor(key: "index", ascending: true)]
+                
+                var siblings = try context.fetch(siblingsFetchRequest)
+                
+                // Remove the tag from its current position
+                siblings.removeAll { $0.id == tagId }
+                
+                // Insert at new position
+                siblings.insert(tagEntity, at: min(newIndex, siblings.count))
+                
+                // Update indices
+                for (index, sibling) in siblings.enumerated() {
+                    sibling.index = Int32(index)
+                }
+                
+                CoreDataManager.shared.saveContext()
+                loadTags()
+            }
+        } catch {
+            print("Error reordering tag: \(error)")
         }
     }
     
@@ -139,9 +182,23 @@ class TagsViewModel: ObservableObject {
                 var currentParent = tagEntity.parent
                 while let parent = currentParent {
                     if parent.id == toParentId {
-                        return false
+                        return true // Allow moving to any ancestor
                     }
                     currentParent = parent.parent
+                }
+                
+                // Check if the target parent is a descendant of the tag
+                let targetFetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+                targetFetchRequest.predicate = NSPredicate(format: "id == %@", toParentId as CVarArg)
+                
+                if let targetEntity = try context.fetch(targetFetchRequest).first {
+                    var currentParent = targetEntity.parent
+                    while let parent = currentParent {
+                        if parent.id == tagId {
+                            return false // Prevent moving to a descendant
+                        }
+                        currentParent = parent.parent
+                    }
                 }
                 
                 return true
