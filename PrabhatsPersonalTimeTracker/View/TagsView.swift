@@ -1,7 +1,4 @@
 import SwiftUI
-#if canImport(UIKit)
-import UIKit
-#endif
 
 struct TagsView: View {
     @StateObject private var viewModel = TagsViewModel()
@@ -9,12 +6,13 @@ struct TagsView: View {
     @State private var selectedParentId: UUID?
     @State private var newTagName = ""
     @State private var selectedColor: CatppuccinFrappe = .blue
+    @State private var collapsedTags: Set<UUID> = []
     
     var body: some View {
         NavigationStack {
             List {
                 ForEach(viewModel.tags) { tag in
-                    TagRow(tag: tag, level: 0, onColorChange: { newColor in
+                    TagRow(tag: tag, level: 0, collapsedTags: $collapsedTags, onColorChange: { newColor in
                         viewModel.updateTagColor(tagId: tag.id, color: newColor)
                     })
                 }
@@ -65,13 +63,46 @@ struct TagsView: View {
 struct TagRow: View {
     let tag: Tag
     let level: Int
+    @Binding var collapsedTags: Set<UUID>
     var onColorChange: ((CatppuccinFrappe) -> Void)?
+    
+    private var isCollapsed: Bool {
+        collapsedTags.contains(tag.id)
+    }
+    
+    private func toggleCollapse() {
+        if collapsedTags.contains(tag.id) {
+            collapsedTags.remove(tag.id)
+        } else {
+            collapsedTags.insert(tag.id)
+        }
+    }
     
     var body: some View {
         HStack {
-            Text(tag.name)
-                .font(.title3)
-                .padding(.leading, CGFloat(level * 20))
+            HStack {
+                if !tag.children.isEmpty {
+                    Button(action: toggleCollapse) {
+                        Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                        
+                        Text(tag.name)
+                            .font(.title3)
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    Text(tag.name)
+                            .font(.title3)
+                }
+                
+                
+                
+                
+                // Text(tag.id.uuidString.prefix(8))
+            }
+            .padding(.leading, CGFloat(level * 20))
+            
             
             Button(action: {
                 // Action to be implemented
@@ -91,9 +122,9 @@ struct TagRow: View {
         }
         .contentShape(Rectangle())
         
-        if !tag.children.isEmpty {
+        if !tag.children.isEmpty && !isCollapsed {
             ForEach(tag.children) { child in
-                TagRow(tag: child, level: level + 1, onColorChange: onColorChange)
+                TagRow(tag: child, level: level + 1, collapsedTags: $collapsedTags, onColorChange: onColorChange)
             }
         }
     }
@@ -148,28 +179,6 @@ struct CatppuccinColorPicker: View {
             .frame(maxWidth: 200)
         }
         .padding(.vertical, 4)
-    }
-}
-
-extension Color {
-    func toHex() -> String? {
-        #if canImport(UIKit)
-        guard let components = UIColor(self).cgColor.components else { return nil }
-        let r = Float(components[0])
-        let g = Float(components[1])
-        let b = Float(components[2])
-        #else
-        // For macOS, we'll use NSColor
-        guard let components = NSColor(self).cgColor.components else { return nil }
-        let r = Float(components[0])
-        let g = Float(components[1])
-        let b = Float(components[2])
-        #endif
-        
-        return String(format: "#%02lX%02lX%02lX",
-                     lroundf(r * 255),
-                     lroundf(g * 255),
-                     lroundf(b * 255))
     }
 }
 
