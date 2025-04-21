@@ -1,45 +1,38 @@
 import Foundation
-import SwiftUI
+import CoreData
 
-struct Tag: Identifiable, Hashable {
+struct Tag: Identifiable {
     let id: UUID
     var name: String
     var color: CatppuccinFrappe
     var children: [Tag]
-    var parentId: UUID?
     
-    init(id: UUID = UUID(), name: String, color: CatppuccinFrappe = .blue, children: [Tag] = [], parentId: UUID? = nil) {
+    init(id: UUID = UUID(), name: String, color: CatppuccinFrappe, children: [Tag] = []) {
         self.id = id
         self.name = name
         self.color = color
         self.children = children
-        self.parentId = parentId
     }
     
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+    init(from entity: TagEntity) {
+        self.id = entity.id ?? UUID()
+        self.name = entity.name ?? ""
+        self.color = CatppuccinFrappe(rawValue: entity.color ?? "") ?? .blue
+        self.children = (entity.children?.allObjects as? [TagEntity])?.map { Tag(from: $0) } ?? []
     }
     
-    static func == (lhs: Tag, rhs: Tag) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
-extension Color {
-    init?(hex: String) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+    func toEntity(in context: NSManagedObjectContext) -> TagEntity {
+        let entity = TagEntity(context: context)
+        entity.id = id
+        entity.name = name
+        entity.color = color.rawValue
         
-        var rgb: UInt64 = 0
+        // Handle children
+        for child in children {
+            let childEntity = child.toEntity(in: context)
+            childEntity.parent = entity
+        }
         
-        guard Scanner(string: hexSanitized).scanHexInt64(&rgb) else { return nil }
-        
-        self.init(
-            .sRGB,
-            red: Double((rgb & 0xFF0000) >> 16) / 255.0,
-            green: Double((rgb & 0x00FF00) >> 8) / 255.0,
-            blue: Double(rgb & 0x0000FF) / 255.0,
-            opacity: 1.0
-        )
+        return entity
     }
 } 

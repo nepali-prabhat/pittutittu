@@ -1,97 +1,113 @@
 import Foundation
-import SwiftUI
+import CoreData
 
 @MainActor
 class TagsViewModel: ObservableObject {
     @Published var tags: [Tag] = []
+    private let context = CoreDataManager.shared.viewContext
     
     init() {
-        // Initialize with some sample data
-        tags = [
-            Tag(name: "University", color: .red, children: [
-                Tag(name: "USA", color: .blue, children: [
-                    Tag(name: "CMU", color: .green, children: [
-                        Tag(name: "canvas course", color: .peach, children: [
-                            Tag(name: "INI Graduate Onboarding 2025", color: .mauve)
-                        ]),
-                        Tag(name: "communication", color: .pink)
-                    ])
-                ]),
-                Tag(name: "Europe", color: .yellow, children: [
-                    Tag(name: "Germany", color: .teal, children: [
-                        Tag(name: "TU Dresden", color: .sky, children: [
-                            Tag(name: "Application", color: .maroon)
-                        ]),
-                        Tag(name: "FAU", color: .sapphire),
-                        Tag(name: "LMU", color: .sky)
-                    ]),
-                    Tag(name: "Luxembourg", color: .teal, children: [
-                        Tag(name: "TUL", color: .sky, children: [
-                            Tag(name: "Application", color: .maroon)
-                        ])
-                    ])
-                ])
-            ]),
-            Tag(name: "Language", color: .yellow, children: [
-                Tag(name: "German", color: .teal, children: [
-                    Tag(name: "DUO lingo", color: .sky)
-                ])
-            ])
-        ]
+        loadTags()
+    }
+    
+    private func loadTags() {
+        let fetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "parent == nil")
+        
+        do {
+            let entities = try context.fetch(fetchRequest)
+            tags = entities.map { Tag(from: $0) }
+        } catch {
+            print("Error loading tags: \(error)")
+        }
     }
     
     func addTag(name: String, color: CatppuccinFrappe, parentId: UUID?) {
-        let newTag = Tag(name: name, color: color, parentId: parentId)
+        let newTag = Tag(name: name, color: color)
+        
         if let parentId = parentId {
-            updateTagInTree(tag: newTag, parentId: parentId)
+            let fetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "id == %@", parentId as CVarArg)
+            
+            do {
+                if let parentEntity = try context.fetch(fetchRequest).first {
+                    let childEntity = newTag.toEntity(in: context)
+                    childEntity.parent = parentEntity
+                    CoreDataManager.shared.saveContext()
+                    loadTags()
+                }
+            } catch {
+                print("Error adding child tag: \(error)")
+            }
         } else {
-            tags.append(newTag)
+            let entity = newTag.toEntity(in: context)
+            CoreDataManager.shared.saveContext()
+            loadTags()
         }
     }
     
     func updateTagColor(tagId: UUID, color: CatppuccinFrappe) {
-        func update(_ tags: inout [Tag]) -> Bool {
-            for i in 0..<tags.count {
-                if tags[i].id == tagId {
-                    var updatedTag = tags[i]
-                    updatedTag.color = color
-                    tags[i] = updatedTag
-                    return true
-                }
-                if update(&tags[i].children) {
-                    return true
-                }
-            }
-            return false
-        }
+        let fetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", tagId as CVarArg)
         
-        var mutableTags = tags
-        _ = update(&mutableTags)
-        tags = mutableTags
+        do {
+            if let entity = try context.fetch(fetchRequest).first {
+                entity.color = color.rawValue
+                CoreDataManager.shared.saveContext()
+                loadTags()
+            }
+        } catch {
+            print("Error updating tag color: \(error)")
+        }
     }
     
-    private func updateTagInTree(tag: Tag, parentId: UUID) {
-        func update(_ tags: inout [Tag]) -> Bool {
-            for i in 0..<tags.count {
-                if tags[i].id == parentId {
-                    var updatedTag = tags[i]
-                    updatedTag.children.append(tag)
-                    tags[i] = updatedTag
-                    return true
-                }
-                if update(&tags[i].children) {
-                    return true
+    func moveTag(tagId: UUID, newParentId: UUID) {
+        let fetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", tagId as CVarArg)
+        
+        do {
+            if let tagEntity = try context.fetch(fetchRequest).first {
+                let parentFetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+                parentFetchRequest.predicate = NSPredicate(format: "id == %@", newParentId as CVarArg)
+                
+                if let newParentEntity = try context.fetch(parentFetchRequest).first {
+                    tagEntity.parent = newParentEntity
+                    CoreDataManager.shared.saveContext()
+                    loadTags()
                 }
             }
-            return false
+        } catch {
+            print("Error moving tag: \(error)")
         }
-        
-        var mutableTags = tags
-        _ = update(&mutableTags)
-        tags = mutableTags
     }
     
-    func moveTag(tagId: UUID, newParentId: UUID?) {
-        // Implementation for moving tags will be added later
+    func canMoveTag(tagId: UUID, toParentId: UUID) -> Bool {
+        // Prevent moving a tag to itself or its children
+        let fetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", tagId as CVarArg)
+        
+        do {
+            if let tagEntity = try context.fetch(fetchRequest).first {
+                // Check if the target parent is the tag itself
+                if tagId == toParentId {
+                    return false
+                }
+                
+                // Check if the target parent is a child of the tag
+                var currentParent = tagEntity.parent
+                while let parent = currentParent {
+                    if parent.id == toParentId {
+                        return false
+                    }
+                    currentParent = parent.parent
+                }
+                
+                return true
+            }
+        } catch {
+            print("Error checking tag move: \(error)")
+        }
+        
+        return false
     }
 } 

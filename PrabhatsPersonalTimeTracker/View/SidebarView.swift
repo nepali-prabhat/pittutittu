@@ -37,7 +37,6 @@ struct SidebarView: View {
             }
         }
         .listStyle(.sidebar)
-        .frame(minWidth: 150)
         .background(BlurWindow())
     }
 }
