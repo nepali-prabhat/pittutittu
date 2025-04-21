@@ -14,6 +14,7 @@ struct BlurWindow: NSViewRepresentable {
     func makeNSView(context: Context) -> some NSView {
         let view = NSVisualEffectView()
         view.blendingMode = .behindWindow
+        view.material = .sidebar  // This provides a stronger blur effect
         
         return view
     }

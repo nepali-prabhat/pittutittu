@@ -28,9 +28,9 @@ struct Home: View {
             }
         }
         .frame(
-            minWidth: 400,
+            minWidth: 500,
             maxWidth: .infinity,
-            minHeight: 600,
+            minHeight: 650,
             maxHeight: .infinity
         )
     }
