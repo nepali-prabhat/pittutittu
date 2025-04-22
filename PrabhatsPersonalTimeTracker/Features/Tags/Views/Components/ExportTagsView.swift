@@ -3,6 +3,7 @@ import SwiftUI
 struct ExportTagsView: View {
     let text: String
     let onDone: () -> Void
+    let onReset: () -> Void
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -13,16 +14,9 @@ struct ExportTagsView: View {
                     .frame(minHeight: 200)
                     .padding()
                     .border(Color.gray.opacity(0.2))
-                    .disabled(true)
                     .onAppear {
                         print("ExportTagsView text: \(text)")
                     }
-                
-                Button("Copy to Clipboard") {
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(text, forType: .string)
-                }
-                .buttonStyle(.bordered)
             }
             .padding()
             .navigationTitle("Export Tags")
@@ -31,6 +25,17 @@ struct ExportTagsView: View {
                     Button("Done") {
                         onDone()
                         dismiss()
+                    }
+                }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Copy to Clipboard") {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(text, forType: .string)
+                    }
+                }
+                ToolbarItem(placement: .automatic) {
+                    Button("Reset Text") {
+                        onReset()
                     }
                 }
             }
@@ -54,6 +59,7 @@ struct ExportTagsView: View {
           ]
         }
         """,
-        onDone: {}
+        onDone: {},
+        onReset: {}
     )
 }

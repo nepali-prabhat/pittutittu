@@ -114,20 +114,21 @@ struct TagRow: View {
     
     var body: some View {
         HStack {
-            HStack {
+            HStack(spacing: 0) {
                 if !tag.children.isEmpty {
-                    Button(action: toggleCollapse) {
-                        Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                            .foregroundColor(.secondary)
-                    }.buttonStyle(.accessoryBar)
-                }
-                
+                       Button(action: toggleCollapse) {
+                           Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
+                               .foregroundColor(.secondary)
+                       }.buttonStyle(.accessoryBar)
+                   }
                 Text(tag.name)
                     .font(.title3)
             }
-            .padding(.leading, CGFloat(level * 32))
+            .padding(.leading, CGFloat(level * 20))
             
             Spacer()
+
+             
 
             Rectangle()
                     .fill(tag.color.color)

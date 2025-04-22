@@ -13,13 +13,6 @@ struct ImportTagsView: View {
                     .frame(minHeight: 200)
                     .padding()
                     .border(Color.gray.opacity(0.2))
-                
-                Button("Import") {
-                    onImport(text)
-                    dismiss()
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(text.isEmpty)
             }
             .padding()
             .navigationTitle("Import Tags")
@@ -29,6 +22,13 @@ struct ImportTagsView: View {
                         text = ""
                         dismiss()
                     }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Import") {
+                        onImport(text)
+                        dismiss()
+                    }
+                    .disabled(text.isEmpty)
                 }
             }
         }

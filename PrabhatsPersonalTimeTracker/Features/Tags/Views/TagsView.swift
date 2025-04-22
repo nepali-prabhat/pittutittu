@@ -6,7 +6,7 @@ struct TagsView: View {
     @State private var selectedParentId: UUID?
     @State private var newTagName = ""
     @State private var selectedColor: CatppuccinFrappe = .blue
-    @State private var collapsedTags: Set<UUID> = []
+    @State private var collapsedTags: Set<UUID> = UserDefaultsManager.shared.loadCollapsedTags()
     @State private var showingImportSheet = false
     @State private var importText = ""
     @State private var showingExportSheet = false
@@ -39,6 +39,10 @@ struct TagsView: View {
                             editTagColor = tag.color
                         })
                     }
+                }
+                .listRowSeparator(.hidden)
+                .onChange(of: collapsedTags) { newValue in
+                    UserDefaultsManager.shared.saveCollapsedTags(newValue)
                 }
                 .contextMenu(forSelectionType: Tag.self) { items in
                     // This is needed to prevent the default context menu
@@ -146,10 +150,16 @@ struct TagsView: View {
                 )
             }
             .sheet(isPresented: $showingExportSheet) {
-                ExportTagsView(text: exportText) {
-                    showingExportSheet = false
-                    exportText = ""
-                }
+                ExportTagsView(
+                    text: exportText,
+                    onDone: {
+                        showingExportSheet = false
+                        exportText = ""
+                    },
+                    onReset: {
+                        exportText = viewModel.exportTags()
+                    }
+                )
             }
             .sheet(item: $tagToDelete) { tag in
                 DeleteTagConfirmationView(
