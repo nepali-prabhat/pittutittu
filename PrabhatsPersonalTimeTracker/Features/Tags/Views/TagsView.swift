@@ -15,6 +15,8 @@ struct TagsView: View {
     @State private var tagToEdit: Tag?
     @State private var editTagName = ""
     @State private var editTagColor: CatppuccinFrappe = .blue
+    @State private var showingDeleteAllConfirmation = false
+    @State private var showingImportConfirmation = false
     
     var body: some View {
         NavigationStack {
@@ -60,17 +62,7 @@ struct TagsView: View {
                 }
                 
                 Button(role: .destructive, action: {
-                    // Delete all tags
-                    let fetchRequest: NSFetchRequest<NSFetchRequestResult> = TagEntity.fetchRequest()
-                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-                    
-                    do {
-                        try viewModel.context.execute(deleteRequest)
-                        CoreDataManager.shared.saveContext()
-                        viewModel.loadTags()
-                    } catch {
-                        print("Error deleting all tags: \(error)")
-                    }
+                    showingDeleteAllConfirmation = true
                 }) {
                     Label("Delete All Tags", systemImage: "trash")
                 }
@@ -143,9 +135,9 @@ struct TagsView: View {
                 ImportTagsView(
                     text: $importText,
                     onImport: { text in
-                        viewModel.importTags(from: text)
                         showingImportSheet = false
-                        importText = ""
+                        importText = text // Store the text temporarily
+                        showingImportConfirmation = true
                     }
                 )
             }
@@ -182,6 +174,35 @@ struct TagsView: View {
                         tagToEdit = nil
                     }
                 )
+            }
+            .alert("Delete All Tags?", isPresented: $showingDeleteAllConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    // Move the delete logic here
+                    let fetchRequest: NSFetchRequest<NSFetchRequestResult> = TagEntity.fetchRequest()
+                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+                    
+                    do {
+                        try viewModel.context.execute(deleteRequest)
+                        CoreDataManager.shared.saveContext()
+                        viewModel.loadTags()
+                    } catch {
+                        print("Error deleting all tags: \(error)")
+                    }
+                }
+            } message: {
+                Text("This action cannot be undone. Are you sure you want to delete all tags?")
+            }
+            .alert("Import Tags", isPresented: $showingImportConfirmation) {
+                Button("Cancel", role: .cancel) {
+                    importText = "" // Clear the stored text
+                }
+                Button("Replace", role: .destructive) {
+                    viewModel.importTags(from: importText)
+                    importText = "" // Clear the stored text
+                }
+            } message: {
+                Text("This will delete all existing tags and replace them with the imported tags. This action cannot be undone. Do you want to continue?")
             }
             .onAppear {
                 exportText = viewModel.exportTags()
