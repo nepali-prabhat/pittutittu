@@ -22,6 +22,9 @@ class TagParser {
         
         print("Parsing \(lines.count) lines")
         
+        // Keep track of siblings at each indent level
+        var siblingCountByIndent: [Int: Int] = [:]
+        
         for line in lines {
             let indent = line.prefix(while: { $0 == " " }).count / 2
             let content = line.trimmingCharacters(in: .whitespaces)
@@ -35,11 +38,18 @@ class TagParser {
             print("  UUID: \(uuid)")
             print("  Color: \(color)")
             
+            // Get the current index for this indent level
+            let currentIndex = siblingCountByIndent[indent] ?? 0
+            
             let tag = Tag(
                 id: uuid,
                 name: name,
-                color: color
+                color: color,
+                index: currentIndex
             )
+            
+            // Increment the sibling count for this indent level
+            siblingCountByIndent[indent] = currentIndex + 1
             
             let node = TagNode(tag: tag, indent: indent)
             
@@ -47,6 +57,9 @@ class TagParser {
             while let lastParent = parentStack.last, lastParent.indent >= indent {
                 print("  Popping parent with indent \(lastParent.indent)")
                 parentStack.removeLast()
+                
+                // Clear sibling counts for deeper levels
+                siblingCountByIndent = siblingCountByIndent.filter { $0.key <= indent }
             }
             
             if let parent = parentStack.last {
@@ -119,12 +132,16 @@ class TagParser {
             let colorString = tag.color.rawValue
             result += "\(indentString)- \(tag.name) (\(uuidString); \(colorString))\n"
             
-            for child in tag.children {
+            // Sort children by index before exporting
+            let sortedChildren = tag.children.sorted(by: { $0.index < $1.index })
+            for child in sortedChildren {
                 appendTag(child, indent: indent + 1)
             }
         }
         
-        for tag in tags {
+        // Sort root tags by index before exporting
+        let sortedTags = tags.sorted(by: { $0.index < $1.index })
+        for tag in sortedTags {
             appendTag(tag, indent: 0)
         }
         
