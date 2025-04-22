@@ -1,7 +1,7 @@
 import Foundation
 import CoreData
 
-struct Tag: Identifiable {
+struct Tag: Identifiable, Hashable {
     let id: UUID
     var name: String
     var color: CatppuccinFrappe
@@ -38,5 +38,13 @@ struct Tag: Identifiable {
         }
         
         return entity
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: Tag, rhs: Tag) -> Bool {
+        lhs.id == rhs.id
     }
 } 

@@ -4,13 +4,13 @@ import CoreData
 @MainActor
 class TagsViewModel: ObservableObject {
     @Published var tags: [Tag] = []
-    private let context = CoreDataManager.shared.viewContext
+    let context = CoreDataManager.shared.viewContext
     
     init() {
         loadTags()
     }
     
-    private func loadTags() {
+    func loadTags() {
         let fetchRequest: NSFetchRequest<TagEntity> = TagEntity.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "parent == nil")
         

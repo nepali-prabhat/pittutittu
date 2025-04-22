@@ -122,17 +122,19 @@ struct TagRow: View {
                     }.buttonStyle(.accessoryBar)
                 }
                 
-                Rectangle()
-                    .fill(tag.color.color)
-                    .frame(width: 12, height: 12)
-                    .cornerRadius(2)
                 Text(tag.name)
                     .font(.title3)
             }
             .padding(.leading, CGFloat(level * 32))
             
             Spacer()
+
+            Rectangle()
+                    .fill(tag.color.color)
+                    .frame(width: 4, height: 12)
+                    .cornerRadius(2)
         }
+        .padding(.trailing, 2)
         .contentShape(Rectangle())
         .onHover { hovering in
             isHovered = hovering
