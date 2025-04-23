@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		334A6DC92DB924320036C3B7 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 334A6DC82DB924320036C3B7 /* EventKit.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		334639C82DB5F3040004CA58 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,11 +31,25 @@
 		334639B92DB5F3020004CA58 /* PrabhatsPersonalTimeTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrabhatsPersonalTimeTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		334639C72DB5F3040004CA58 /* PrabhatsPersonalTimeTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrabhatsPersonalTimeTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		334639D12DB5F3040004CA58 /* PrabhatsPersonalTimeTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrabhatsPersonalTimeTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		334A6DC82DB924320036C3B7 /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.4.sdk/System/Library/Frameworks/EventKit.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		334A6DCB2DB9243C0036C3B7 /* Exceptions for "PrabhatsPersonalTimeTracker" folder in "PrabhatsPersonalTimeTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 334639B82DB5F3020004CA58 /* PrabhatsPersonalTimeTracker */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		334639BB2DB5F3020004CA58 /* PrabhatsPersonalTimeTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				334A6DCB2DB9243C0036C3B7 /* Exceptions for "PrabhatsPersonalTimeTracker" folder in "PrabhatsPersonalTimeTracker" target */,
+			);
 			path = PrabhatsPersonalTimeTracker;
 			sourceTree = "<group>";
 		};
@@ -52,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				334A6DC92DB924320036C3B7 /* EventKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +97,7 @@
 				334639BB2DB5F3020004CA58 /* PrabhatsPersonalTimeTracker */,
 				334639CA2DB5F3040004CA58 /* PrabhatsPersonalTimeTrackerTests */,
 				334639D42DB5F3040004CA58 /* PrabhatsPersonalTimeTrackerUITests */,
+				334A6DC72DB924320036C3B7 /* Frameworks */,
 				334639BA2DB5F3020004CA58 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +110,14 @@
 				334639D12DB5F3040004CA58 /* PrabhatsPersonalTimeTrackerUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		334A6DC72DB924320036C3B7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				334A6DC82DB924320036C3B7 /* EventKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -397,6 +425,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PrabhatsPersonalTimeTracker/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -416,10 +445,11 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 2.4;
 			};
 			name = Debug;
@@ -436,6 +466,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PrabhatsPersonalTimeTracker/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -455,10 +486,11 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 2.4;
 			};
 			name = Release;
