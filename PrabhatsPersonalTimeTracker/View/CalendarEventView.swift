@@ -14,6 +14,7 @@ struct CalendarEventView: View {
     @State private var selectedCalendarIdentifier: String
     @Environment(\.dismiss) private var dismiss
     @StateObject private var logViewModel = CalendarEventLogViewModel()
+    @FocusState private var isTitleFocused: Bool
     
     private let eventStore = EKEventStore()
     private let eventColor: Color
@@ -53,14 +54,37 @@ struct CalendarEventView: View {
             
             Section(header: Text("Event Details")) {
                 TextField("Event Title", text: $eventTitle)
+                    .focused($isTitleFocused)
                 DatePicker("Start Date", selection: $eventStartDate)
                 DatePicker("End Date", selection: $eventEndDate)
-                TextEditor("Event Notes", text: $eventNotes)
+                
+                HStack(spacing: 8) {
+                    ForEach([15, 30, 45, 60, 90, 120], id: \.self) { minutes in
+                        Button(action: {
+                            eventEndDate = eventStartDate.addingTimeInterval(TimeInterval(minutes * 60))
+                        }) {
+                            Text(formatDuration(minutes))
+                                .font(.system(size: 12))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.secondary.opacity(0.1))
+                                .cornerRadius(4)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.top, 4)
+                
+                TextEditor(text: $eventNotes)
                     .frame(height: 100)
+                    .overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                        )
             }
         }
         .padding()
-        .frame(width: 400, height: 400)
+        // .frame(width: 400, height: 400)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
@@ -94,6 +118,7 @@ struct CalendarEventView: View {
         .onAppear {
             checkCalendarAccess()
             loadCalendars()
+            isTitleFocused = true
         }
     }
     
@@ -209,6 +234,22 @@ struct CalendarEventView: View {
         eventStartDate = Date()
         eventEndDate = Date().addingTimeInterval(3600)
         eventNotes = ""
+    }
+    
+    private func formatDuration(_ minutes: Int) -> String {
+        if minutes < 60 {
+            return "\(minutes)m"
+        } else if minutes == 60 {
+            return "1h"
+        } else {
+            let hours = minutes / 60
+            let remainingMinutes = minutes % 60
+            if remainingMinutes == 0 {
+                return "\(hours)h"
+            } else {
+                return "\(hours)h \(remainingMinutes)m"
+            }
+        }
     }
 }
 
