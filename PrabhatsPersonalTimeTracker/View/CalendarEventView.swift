@@ -37,16 +37,10 @@ struct CalendarEventView: View {
     
     var body: some View {
         Form {
-            Section(header: Text("Event Details")) {
-                TextField("Event Title", text: $eventTitle)
-                DatePicker("Start Date", selection: $eventStartDate)
-                DatePicker("End Date", selection: $eventEndDate)
-                TextEditor(text: $eventNotes)
-                    .frame(height: 100)
-            }
+            
             
             Section(header: Text("Calendar")) {
-                Picker("Select Calendar", selection: $selectedCalendarIdentifier) {
+                Picker("Calendar", selection: $selectedCalendarIdentifier) {
                     ForEach(availableCalendars, id: \.calendarIdentifier) { calendar in
                         Text(calendar.title)
                             .tag(calendar.calendarIdentifier)
@@ -57,14 +51,24 @@ struct CalendarEventView: View {
                 }
             }
             
-            HStack {
+            Section(header: Text("Event Details")) {
+                TextField("Event Title", text: $eventTitle)
+                DatePicker("Start Date", selection: $eventStartDate)
+                DatePicker("End Date", selection: $eventEndDate)
+                TextEditor("Event Notes", text: $eventNotes)
+                    .frame(height: 100)
+            }
+        }
+        .padding()
+        .frame(width: 400, height: 400)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
                     dismiss()
                 }
-                .buttonStyle(.bordered)
-                
-                Spacer()
-                
+            }
+            
+            ToolbarItem(placement: .confirmationAction) {
                 Button("Create Event") {
                     if hasCalendarAccess {
                         createEvent()
@@ -72,12 +76,9 @@ struct CalendarEventView: View {
                         requestCalendarAccess()
                     }
                 }
-                .buttonStyle(.borderedProminent)
                 .disabled(eventTitle.isEmpty)
             }
         }
-        .padding()
-        .frame(width: 400, height: 400)
         .alert("Event Creation", isPresented: $showAlert) {
             Button("OK", role: .cancel) {
                 dismiss()
