@@ -13,6 +13,7 @@ struct CalendarEventView: View {
     @State private var availableCalendars: [EKCalendar] = []
     @State private var selectedCalendarIdentifier: String
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var logViewModel = CalendarEventLogViewModel()
     
     private let eventStore = EKEventStore()
     private let eventColor: Color
@@ -182,6 +183,17 @@ struct CalendarEventView: View {
         
         do {
             try eventStore.save(event, span: .thisEvent)
+            
+            // Save the log
+            logViewModel.addLog(
+                calendarEventId: event.eventIdentifier,
+                title: eventTitle,
+                startDate: eventStartDate,
+                endDate: eventEndDate,
+                tagPath: tagPath,
+                tagColor: eventColor.description
+            )
+            
             alertMessage = "Event created successfully!"
             showAlert = true
             resetForm()

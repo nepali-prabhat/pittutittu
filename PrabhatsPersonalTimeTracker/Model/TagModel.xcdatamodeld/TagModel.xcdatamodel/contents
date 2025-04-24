@@ -8,4 +8,13 @@
         <relationship name="children" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TagEntity" inverseName="parent" inverseEntity="TagEntity"/>
         <relationship name="parent" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TagEntity" inverseName="children" inverseEntity="TagEntity"/>
     </entity>
+    <entity name="CalendarEventLogEntity" representedClassName="CalendarEventLogEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="calendarEventId" optional="YES" attributeType="String"/>
+        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="tagColor" optional="YES" attributeType="String"/>
+        <attribute name="tagPath" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+    </entity>
 </model> 
