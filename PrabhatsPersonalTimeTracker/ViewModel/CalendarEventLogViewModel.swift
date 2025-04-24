@@ -37,4 +37,19 @@ class CalendarEventLogViewModel: ObservableObject {
         CoreDataManager.shared.saveContext()
         loadLogs()
     }
+    
+    func stopLog(calendarEventId: String) {
+        let fetchRequest: NSFetchRequest<CalendarEventLogEntity> = CalendarEventLogEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "calendarEventId == %@", calendarEventId)
+        
+        do {
+            if let entity = try context.fetch(fetchRequest).first {
+                entity.timerEndDate = Date()
+                CoreDataManager.shared.saveContext()
+                loadLogs()
+            }
+        } catch {
+            print("Error stopping log: \(error)")
+        }
+    }
 } 
