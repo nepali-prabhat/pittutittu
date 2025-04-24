@@ -48,8 +48,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "53"
             endingLineNumber = "53"
-            landmarkName = "checkCalendarAccess()"
-            landmarkType = "7">
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -64,8 +64,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "54"
             endingLineNumber = "54"
-            landmarkName = "checkCalendarAccess()"
-            landmarkType = "7">
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -80,38 +80,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "58"
             endingLineNumber = "58"
-            landmarkName = "requestCalendarAccess()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9A1C847C-9AE8-4807-8A53-79457527D382 - b71c29f247208cb2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PrabhatsPersonalTimeTracker.CalendarEventView.requestCalendarAccess() -&gt; ()"
-                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/View/CalendarEventView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-               <Location
-                  uuid = "9A1C847C-9AE8-4807-8A53-79457527D382 - e7b0ef5a46164bba"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Bool, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in PrabhatsPersonalTimeTracker.CalendarEventView.requestCalendarAccess() -&gt; ()"
-                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/View/CalendarEventView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-            </Locations>
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -126,38 +96,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "59"
             endingLineNumber = "59"
-            landmarkName = "requestCalendarAccess()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "675B3795-FCA3-468D-981C-DFEFBFEB33FF - e7b0ef5a46164bdb"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Bool, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in PrabhatsPersonalTimeTracker.CalendarEventView.requestCalendarAccess() -&gt; ()"
-                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/View/CalendarEventView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "59"
-                  endingLineNumber = "59">
-               </Location>
-               <Location
-                  uuid = "675B3795-FCA3-468D-981C-DFEFBFEB33FF - e9d709fcfbafc2e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in closure #1 (Swift.Bool, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in PrabhatsPersonalTimeTracker.CalendarEventView.requestCalendarAccess() -&gt; ()"
-                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/View/CalendarEventView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "59"
-                  endingLineNumber = "59">
-               </Location>
-            </Locations>
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -1,5 +1,4 @@
 import SwiftUI
-import PrabhatsPersonalTimeTracker
 
 struct DeleteTagConfirmationView: View {
     let tag: Tag

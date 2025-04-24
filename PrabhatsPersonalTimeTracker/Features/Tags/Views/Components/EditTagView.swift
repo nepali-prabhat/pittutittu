@@ -1,5 +1,4 @@
 import SwiftUI
-import PrabhatsPersonalTimeTracker
 
 struct EditTagView: View {
     @Binding var name: String

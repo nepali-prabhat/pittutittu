@@ -3,6 +3,7 @@ import Foundation
 class UserDefaultsManager {
     static let shared = UserDefaultsManager()
     private let collapsedTagsKey = "collapsedTags"
+    private let selectedCalendarKey = "selectedCalendarIdentifier"
     
     private init() {}
     
@@ -16,5 +17,13 @@ class UserDefaultsManager {
             return []
         }
         return Set(stringIds.compactMap { UUID(uuidString: $0) })
+    }
+    
+    func saveSelectedCalendar(_ calendarIdentifier: String) {
+        UserDefaults.standard.set(calendarIdentifier, forKey: selectedCalendarKey)
+    }
+    
+    func loadSelectedCalendar() -> String? {
+        return UserDefaults.standard.string(forKey: selectedCalendarKey)
     }
 } 

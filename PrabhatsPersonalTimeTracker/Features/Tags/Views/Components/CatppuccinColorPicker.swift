@@ -1,5 +1,4 @@
 import SwiftUI
-import PrabhatsPersonalTimeTracker
 
 struct CatppuccinColorPicker: View {
     @Binding var selectedColor: CatppuccinFrappe

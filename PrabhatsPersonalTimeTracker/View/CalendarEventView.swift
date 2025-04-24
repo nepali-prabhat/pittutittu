@@ -2,16 +2,35 @@ import SwiftUI
 import EventKit
 
 struct CalendarEventView: View {
-    @State private var eventTitle: String = ""
-    @State private var eventStartDate: Date = Date()
-    @State private var eventEndDate: Date = Date().addingTimeInterval(3600)
-    @State private var eventNotes: String = ""
+    @State private var eventTitle: String
+    @State private var eventStartDate: Date
+    @State private var eventEndDate: Date
+    @State private var eventNotes: String
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var hasCalendarAccess = false
     @State private var showingPermissionAlert = false
+    @State private var availableCalendars: [EKCalendar] = []
+    @State private var selectedCalendarIdentifier: String
+    @Environment(\.dismiss) private var dismiss
     
     private let eventStore = EKEventStore()
+    private let eventColor: Color
+    
+    init(eventTitle: String = "", eventStartDate: Date = Date(), eventEndDate: Date = Date().addingTimeInterval(3600), eventNotes: String = "", eventColor: Color = .blue) {
+        _eventTitle = State(initialValue: eventTitle)
+        _eventStartDate = State(initialValue: eventStartDate)
+        _eventEndDate = State(initialValue: eventEndDate)
+        _eventNotes = State(initialValue: eventNotes)
+        self.eventColor = eventColor
+        
+        // Initialize selected calendar from UserDefaults
+        if let savedCalendarId = UserDefaultsManager.shared.loadSelectedCalendar() {
+            _selectedCalendarIdentifier = State(initialValue: savedCalendarId)
+        } else {
+            _selectedCalendarIdentifier = State(initialValue: "")
+        }
+    }
     
     var body: some View {
         Form {
@@ -23,17 +42,39 @@ struct CalendarEventView: View {
                     .frame(height: 100)
             }
             
-            Button("Create Event") {
-                if hasCalendarAccess {
-                    createEvent()
-                } else {
-                    requestCalendarAccess()
+            Section(header: Text("Calendar")) {
+                Picker("Select Calendar", selection: $selectedCalendarIdentifier) {
+                    ForEach(availableCalendars, id: \.calendarIdentifier) { calendar in
+                        Text(calendar.title)
+                            .tag(calendar.calendarIdentifier)
+                    }
+                }
+                .onChange(of: selectedCalendarIdentifier) { newValue in
+                    UserDefaultsManager.shared.saveSelectedCalendar(newValue)
                 }
             }
-            .disabled(eventTitle.isEmpty)
+            
+            HStack {
+                Button("Cancel") {
+                    dismiss()
+                }
+                .buttonStyle(.bordered)
+                
+                Spacer()
+                
+                Button("Create Event") {
+                    if hasCalendarAccess {
+                        createEvent()
+                    } else {
+                        requestCalendarAccess()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(eventTitle.isEmpty)
+            }
         }
         .padding()
-        .frame(width: 400, height: 300)
+        .frame(width: 400, height: 400)
         .alert("Event Creation", isPresented: $showAlert) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -46,6 +87,7 @@ struct CalendarEventView: View {
         }
         .onAppear {
             checkCalendarAccess()
+            loadCalendars()
         }
     }
     
@@ -54,11 +96,22 @@ struct CalendarEventView: View {
         hasCalendarAccess = status == .fullAccess
     }
     
+    private func loadCalendars() {
+        availableCalendars = eventStore.calendars(for: .event)
+        
+        // If no calendar is selected and we have calendars available, select the first one
+        if selectedCalendarIdentifier.isEmpty && !availableCalendars.isEmpty {
+            selectedCalendarIdentifier = availableCalendars[0].calendarIdentifier
+            UserDefaultsManager.shared.saveSelectedCalendar(selectedCalendarIdentifier)
+        }
+    }
+    
     private func requestCalendarAccess() {
         eventStore.requestFullAccessToEvents { granted, error in
             DispatchQueue.main.async {
                 if granted {
                     hasCalendarAccess = true
+                    loadCalendars()
                     createEvent()
                 } else {
                     showingPermissionAlert = true
@@ -73,7 +126,13 @@ struct CalendarEventView: View {
         event.startDate = eventStartDate
         event.endDate = eventEndDate
         event.notes = eventNotes
-        event.calendar = eventStore.defaultCalendarForNewEvents
+        
+        // Set the event's calendar to the selected calendar
+        if let calendar = eventStore.calendar(withIdentifier: selectedCalendarIdentifier) {
+            event.calendar = calendar
+        } else {
+            event.calendar = eventStore.defaultCalendarForNewEvents
+        }
         
         do {
             try eventStore.save(event, span: .thisEvent)

@@ -13,6 +13,7 @@ struct TagRow: View {
     @State private var isHovered = false
     @State private var isTargeted = false
     @State private var isDragging = false
+    @State private var showingCalendarEventSheet = false
     
     private var isCollapsed: Bool {
         collapsedTags.contains(tag.id)
@@ -69,7 +70,7 @@ struct TagRow: View {
     @ViewBuilder
     private var tagActions: some View {
         Button(action: {
-            // Play action
+            showingCalendarEventSheet = true
         }) {
             Label("Start Timer", systemImage: "play.circle.fill")
         }
@@ -142,6 +143,15 @@ struct TagRow: View {
         }
         .contextMenu {
             tagActions
+        }
+        .sheet(isPresented: $showingCalendarEventSheet) {
+            CalendarEventView(
+                eventTitle: "",
+                eventStartDate: Date(),
+                eventEndDate: Date().addingTimeInterval(3600),
+                eventNotes: tag.name,
+                eventColor: tag.color.color
+            )
         }
         // .listRowSeparator(.hidden)
         .background(
