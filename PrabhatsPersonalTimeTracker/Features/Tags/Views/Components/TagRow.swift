@@ -120,24 +120,34 @@ struct TagRow: View {
                 if !tag.children.isEmpty {
                        Button(action: toggleCollapse) {
                            Image(systemName: isCollapsed ? "chevron.right" : "chevron.down")
-                               .foregroundColor(.secondary)
+                               .foregroundColor(tag.color.color)
                        }.buttonStyle(.accessoryBar)
                    }
+                else{
+                    Button(action: {}) {
+                        Image(systemName: "arrow.right")
+                            .foregroundColor(tag.color.color)
+                    }.buttonStyle(.accessoryBar)
+                }
                 Text(tag.name)
                     .font(.title3)
             }
-            .padding(.leading, CGFloat(level * 20))
+            .padding(.leading, CGFloat(level * 25))
             
             Spacer()
+            
+            Button(action: {
+                showingCalendarEventSheet = true
+            }) {
+                Image(systemName: "play.circle.fill")
+                    .foregroundColor(.accentColor)
+            }
+            .buttonStyle(.plain)
+            .help("Start Timer")
 
-             
-
-            Rectangle()
-                    .fill(tag.color.color)
-                    .frame(width: 4, height: 12)
-                    .cornerRadius(2)
+            
         }
-        .padding(.trailing, 2)
+         .padding(.trailing, 2)
         .contentShape(Rectangle())
         .onHover { hovering in
             isHovered = hovering
