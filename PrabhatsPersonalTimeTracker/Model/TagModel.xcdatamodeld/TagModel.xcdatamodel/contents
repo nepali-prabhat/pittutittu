@@ -15,6 +15,7 @@
         <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="tagColor" optional="YES" attributeType="String"/>
         <attribute name="tagPath" optional="YES" attributeType="String"/>
+        <attribute name="timerEndDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="title" optional="YES" attributeType="String"/>
     </entity>
 </model> 

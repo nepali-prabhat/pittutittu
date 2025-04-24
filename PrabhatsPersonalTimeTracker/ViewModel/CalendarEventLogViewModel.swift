@@ -22,12 +22,13 @@ class CalendarEventLogViewModel: ObservableObject {
         }
     }
     
-    func addLog(calendarEventId: String, title: String, startDate: Date, endDate: Date, tagPath: String, tagColor: String) {
+    func addLog(calendarEventId: String, title: String, startDate: Date, endDate: Date, timerEndDate: Date? = nil, tagPath: String, tagColor: String) {
         let log = CalendarEventLog(
             calendarEventId: calendarEventId,
             title: title,
             startDate: startDate,
             endDate: endDate,
+            timerEndDate: timerEndDate,
             tagPath: tagPath,
             tagColor: tagColor
         )

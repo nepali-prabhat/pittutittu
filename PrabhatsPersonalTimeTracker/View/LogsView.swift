@@ -11,11 +11,23 @@ struct LogsView: View {
                     TableColumn("Start Time") { log in
                         Text(log.startDate.formatted(date: .abbreviated, time: .shortened))
                     }
-                    TableColumn("End Time") { log in
+                    TableColumn("Expected End Time") { log in
                         Text(log.endDate.formatted(date: .abbreviated, time: .shortened))
                     }
+                    TableColumn("Timer End") { log in
+                        if let timerEndDate = log.timerEndDate {
+                            Text(timerEndDate.formatted(date: .abbreviated, time: .shortened))
+                        } else {
+                            Text("-")
+                        }
+                    }
                     TableColumn("Duration") { log in
-                        Text(formatDuration(from: log.startDate, to: log.endDate))
+                        HStack {
+                            Text(formatDuration(from: log.startDate, to: log.timerEndDate ?? log.endDate))
+                            if log.timerEndDate == nil {
+                                Text("(expected)")
+                            }
+                        }
                     }
                     TableColumn("Tag Path", value: \.tagPath)
                     // NOTE: Don't delete this

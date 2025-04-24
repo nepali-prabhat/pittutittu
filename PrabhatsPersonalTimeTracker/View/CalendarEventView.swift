@@ -216,6 +216,7 @@ struct CalendarEventView: View {
                 title: eventTitle,
                 startDate: eventStartDate,
                 endDate: eventEndDate,
+                timerEndDate: nil, // This will be set when the timer is stopped
                 tagPath: tagPath,
                 tagColor: eventColor.description
             )

@@ -7,15 +7,17 @@ struct CalendarEventLog: Identifiable {
     let title: String
     let startDate: Date
     let endDate: Date
+    let timerEndDate: Date?
     let tagPath: String
     let tagColor: String
     
-    init(id: UUID = UUID(), calendarEventId: String, title: String, startDate: Date, endDate: Date, tagPath: String, tagColor: String) {
+    init(id: UUID = UUID(), calendarEventId: String, title: String, startDate: Date, endDate: Date, timerEndDate: Date? = nil, tagPath: String, tagColor: String) {
         self.id = id
         self.calendarEventId = calendarEventId
         self.title = title
         self.startDate = startDate
         self.endDate = endDate
+        self.timerEndDate = timerEndDate
         self.tagPath = tagPath
         self.tagColor = tagColor
     }
@@ -26,6 +28,7 @@ struct CalendarEventLog: Identifiable {
         self.title = entity.title ?? ""
         self.startDate = entity.startDate ?? Date()
         self.endDate = entity.endDate ?? Date()
+        self.timerEndDate = entity.timerEndDate
         self.tagPath = entity.tagPath ?? ""
         self.tagColor = entity.tagColor ?? ""
     }
@@ -37,6 +40,7 @@ struct CalendarEventLog: Identifiable {
         entity.title = title
         entity.startDate = startDate
         entity.endDate = endDate
+        entity.timerEndDate = timerEndDate
         entity.tagPath = tagPath
         entity.tagColor = tagColor
         return entity
