@@ -1,7 +1,7 @@
 import Foundation
 import CoreData
 
-struct CalendarEventLog: Identifiable {
+struct CalendarEventLog: Identifiable, Hashable {
     let id: UUID
     let calendarEventId: String
     let title: String
@@ -44,5 +44,15 @@ struct CalendarEventLog: Identifiable {
         entity.tagPath = tagPath
         entity.tagColor = tagColor
         return entity
+    }
+    
+    // MARK: - Hashable
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: CalendarEventLog, rhs: CalendarEventLog) -> Bool {
+        lhs.id == rhs.id
     }
 } 

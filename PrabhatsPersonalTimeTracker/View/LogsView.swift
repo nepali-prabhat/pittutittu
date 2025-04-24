@@ -2,60 +2,28 @@ import SwiftUI
 
 struct LogsView: View {
     @StateObject private var viewModel = CalendarEventLogViewModel()
+    @State private var selectedLogIds: Set<UUID> = []
+    @State private var showingDeleteConfirmation = false
     
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
-                Table(viewModel.logs) {
-                    TableColumn("Title", value: \.title)
-                    TableColumn("Start Time") { log in
-                        Text(log.startDate.formatted(date: .abbreviated, time: .shortened))
-                    }
-                    TableColumn("Expected End Time") { log in
-                        Text(log.endDate.formatted(date: .abbreviated, time: .shortened))
-                    }
-                    TableColumn("Timer End") { log in
-                        if let timerEndDate = log.timerEndDate {
-                            Text(timerEndDate.formatted(date: .abbreviated, time: .shortened))
-                        } else {
-                            Text("-")
-                        }
-                    }
-                    TableColumn("Duration") { log in
-                        HStack {
-                            Text(formatDuration(from: log.startDate, to: log.timerEndDate ?? log.endDate))
-                            if log.timerEndDate == nil {
-                                Text("(expected)")
-                            }
-                        }
-                    }
-                    TableColumn("Tag Path", value: \.tagPath)
-                    // NOTE: Don't delete this
-                    TableColumn("Tag Color") { log in
-                        HStack {
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color(hex: log.tagColor) ?? .gray)
-                                .frame(width: 12, height: 12)
-                        }
-                    }
-                    TableColumn("EventId") { log in
-                        Text(log.calendarEventId)
-                            .contextMenu {
-                                Button(action: {
-                                    NSPasteboard.general.clearContents()
-                                    NSPasteboard.general.setString(log.calendarEventId, forType: .string)
-                                }) {
-                                    Label("Copy Event ID", systemImage: "doc.on.doc")
-                                }
-                            }
-                    }
-
-                }
-                // .padding()
-                .background(Color(NSColor.controlBackgroundColor))
+                LogsTableView(
+                    logs: viewModel.logs,
+                    selectedLogIds: $selectedLogIds
+                )
             }
             .navigationTitle("Time Logs")
             .toolbar {
+                ToolbarItem(placement: .destructiveAction) {
+                    Button(role: .destructive, action: {
+                        showingDeleteConfirmation = true
+                    }) {
+                        Label("Delete Selected", systemImage: "trash")
+                    }
+                    .disabled(selectedLogIds.isEmpty)
+                }
+                
                 ToolbarItem(placement: .automatic) {
                     Menu {
                         Button(action: {
@@ -91,6 +59,108 @@ struct LogsView: View {
                         Label("Filter", systemImage: "line.3.horizontal.decrease.circle")
                     }
                 }
+            }
+            .alert("Delete Selected Logs", isPresented: $showingDeleteConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    for log in viewModel.logs where selectedLogIds.contains(log.id) {
+                        viewModel.deleteLog(calendarEventId: log.calendarEventId)
+                    }
+                    selectedLogIds.removeAll()
+                }
+            } message: {
+                Text("Are you sure you want to delete \(selectedLogIds.count) selected log(s)? This action cannot be undone.")
+            }
+        }
+    }
+}
+
+struct LogsTableView: View {
+    let logs: [CalendarEventLog]
+    @Binding var selectedLogIds: Set<UUID>
+    
+    var body: some View {
+        Table(logs) {
+            TableColumn("") { log in
+                HStack {
+                    Spacer()
+                    Toggle("", isOn: Binding(
+                        get: { selectedLogIds.contains(log.id) },
+                        set: { isSelected in
+                            if isSelected {
+                                selectedLogIds.insert(log.id)
+                            } else {
+                                selectedLogIds.remove(log.id)
+                            }
+                        }
+                    ))
+                    .toggleStyle(.checkbox)
+                    .labelsHidden()
+                    Spacer()
+                }
+                .frame(width: 15)
+            }
+            .width(15)
+            
+            TableColumn("Title", value: \.title)
+            TableColumn("Start Time") { log in
+                Text(log.startDate.formatted(date: .abbreviated, time: .shortened))
+            }
+            TableColumn("Expected End Time") { log in
+                Text(log.endDate.formatted(date: .abbreviated, time: .shortened))
+            }
+            TableColumn("Timer End") { log in
+                if let timerEndDate = log.timerEndDate {
+                    Text(timerEndDate.formatted(date: .abbreviated, time: .shortened))
+                } else {
+                    Text("-")
+                }
+            }
+            TableColumn("Duration") { log in
+                HStack {
+                    Text(formatDuration(from: log.startDate, to: log.timerEndDate ?? log.endDate))
+                    if log.timerEndDate == nil {
+                        Text("(expected)")
+                    }
+                }
+            }
+            TableColumn("Tag Path", value: \.tagPath)
+            TableColumn("Tag Color") { log in
+                HStack {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color(hex: log.tagColor) ?? .gray)
+                        .frame(width: 12, height: 12)
+                }
+            }
+            TableColumn("EventId") { log in
+                Text(log.calendarEventId)
+                    .contextMenu {
+                        Button(action: {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(log.calendarEventId, forType: .string)
+                        }) {
+                            Label("Copy Event ID", systemImage: "doc.on.doc")
+                        }
+                    }
+            }
+        }
+        .background(Color(NSColor.controlBackgroundColor))
+        .overlay(alignment: .topLeading) {
+            if !logs.isEmpty {
+                    Toggle("", isOn: Binding(
+                        get: { selectedLogIds.count == logs.count },
+                        set: { isSelected in
+                            if isSelected {
+                                selectedLogIds = Set(logs.map { $0.id })
+                            } else {
+                                selectedLogIds.removeAll()
+                            }
+                        }
+                    ))
+                    .toggleStyle(.checkbox)
+                    .labelsHidden()
+                .padding(.leading, 16)
+                .padding(.top, 8)
             }
         }
     }

@@ -52,4 +52,19 @@ class CalendarEventLogViewModel: ObservableObject {
             print("Error stopping log: \(error)")
         }
     }
+    
+    func deleteLog(calendarEventId: String) {
+        let fetchRequest: NSFetchRequest<CalendarEventLogEntity> = CalendarEventLogEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "calendarEventId == %@", calendarEventId)
+        
+        do {
+            if let entity = try context.fetch(fetchRequest).first {
+                context.delete(entity)
+                CoreDataManager.shared.saveContext()
+                loadLogs()
+            }
+        } catch {
+            print("Error deleting log: \(error)")
+        }
+    }
 } 

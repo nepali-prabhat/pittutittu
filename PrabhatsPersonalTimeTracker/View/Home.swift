@@ -18,20 +18,24 @@ struct Home: View {
         } detail: {
             switch selectedSection {
             case .active:
-                ActiveView().frame(minWidth:400)
+                ActiveView()
+//                    .frame(minWidth:400)
             case .tags:
-                TagsView().frame(minWidth:400)
+                TagsView()
+//                    .frame(minWidth:400)
             case .logs:
-                LogsView().frame(minWidth:400)
+                LogsView()
+//                    .frame(minWidth:400)
             case .reports:
-                ReportsView().frame(minWidth:400)
+                ReportsView()
+//                    .frame(minWidth:400)
             }
         }
         .frame(
-            minWidth: 550,
-            maxWidth: .infinity,
-            minHeight: 600,
-            maxHeight: .infinity
+//            minWidth: 550,
+//            maxWidth: .infinity,
+//            minHeight: 300,
+//            maxHeight: .infinity
         )
     }
 }

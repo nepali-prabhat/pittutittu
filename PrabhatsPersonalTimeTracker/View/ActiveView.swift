@@ -3,6 +3,7 @@ import SwiftUI
 struct ActiveView: View {
     @StateObject private var viewModel = CalendarEventLogViewModel()
     @State private var showingCalendarEventSheet = false
+    @State private var navigateToTags = false
     
     private var activeLogs: [CalendarEventLog] {
         viewModel.logs.filter { $0.timerEndDate == nil }
@@ -24,14 +25,14 @@ struct ActiveView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
-                        showingCalendarEventSheet = true
+                        navigateToTags = true
                     }) {
                         Label("New Task", systemImage: "plus")
                     }
                 }
             }
-            .sheet(isPresented: $showingCalendarEventSheet) {
-                CalendarEventView()
+            .navigationDestination(isPresented: $navigateToTags) {
+                TagsView()
             }
         }
     }
