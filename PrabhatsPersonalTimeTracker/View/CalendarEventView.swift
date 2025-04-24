@@ -16,13 +16,15 @@ struct CalendarEventView: View {
     
     private let eventStore = EKEventStore()
     private let eventColor: Color
+    private let tagPath: String
     
-    init(eventTitle: String = "", eventStartDate: Date = Date(), eventEndDate: Date = Date().addingTimeInterval(3600), eventNotes: String = "", eventColor: Color = .blue) {
+    init(eventTitle: String = "", eventStartDate: Date = Date(), eventEndDate: Date = Date().addingTimeInterval(3600), eventNotes: String = "", eventColor: Color = .blue, tagPath: String = "") {
         _eventTitle = State(initialValue: eventTitle)
         _eventStartDate = State(initialValue: eventStartDate)
         _eventEndDate = State(initialValue: eventEndDate)
         _eventNotes = State(initialValue: eventNotes)
         self.eventColor = eventColor
+        self.tagPath = tagPath
         
         // Initialize selected calendar from UserDefaults
         if let savedCalendarId = UserDefaultsManager.shared.loadSelectedCalendar() {
@@ -76,7 +78,9 @@ struct CalendarEventView: View {
         .padding()
         .frame(width: 400, height: 400)
         .alert("Event Creation", isPresented: $showAlert) {
-            Button("OK", role: .cancel) { }
+            Button("OK", role: .cancel) {
+                dismiss()
+            }
         } message: {
             Text(alertMessage)
         }
@@ -120,6 +124,40 @@ struct CalendarEventView: View {
         }
     }
     
+    private func getOrCreateTagCalendar() -> EKCalendar? {
+        // Create a unique calendar name based on the tag's color
+        let tagCalendarTitle = "Tag Events - \(eventColor.description)"
+        
+        // Try to find existing calendar for this color
+        if let existingCalendar = eventStore.calendars(for: .event).first(where: { $0.title == tagCalendarTitle }) {
+            return existingCalendar
+        }
+        
+        // Get the source from the selected calendar
+        guard let selectedCalendar = eventStore.calendar(withIdentifier: selectedCalendarIdentifier),
+              let source = selectedCalendar.source else {
+            return nil
+        }
+        
+        // Create new calendar if none exists
+        let calendar = EKCalendar(for: .event, eventStore: eventStore)
+        calendar.title = tagCalendarTitle
+        calendar.source = source
+        
+        // Set the calendar color
+        if let cgColor = eventColor.cgColor {
+            calendar.cgColor = cgColor
+        }
+        
+        do {
+            try eventStore.saveCalendar(calendar, commit: true)
+            return calendar
+        } catch {
+            print("Error creating tag calendar: \(error)")
+            return nil
+        }
+    }
+    
     private func createEvent() {
         let event = EKEvent(eventStore: eventStore)
         event.title = eventTitle
@@ -133,6 +171,14 @@ struct CalendarEventView: View {
         } else {
             event.calendar = eventStore.defaultCalendarForNewEvents
         }
+        
+        // Add tag information to the event's notes
+        let tagInfo = """
+        
+        Tag Path: \(tagPath)
+        Tag Color: \(eventColor.description)
+        """
+        event.notes = (event.notes ?? "") + tagInfo
         
         do {
             try eventStore.save(event, span: .thisEvent)

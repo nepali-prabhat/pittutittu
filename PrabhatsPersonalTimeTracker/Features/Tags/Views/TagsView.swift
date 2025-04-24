@@ -18,6 +18,33 @@ struct TagsView: View {
     @State private var showingDeleteAllConfirmation = false
     @State private var showingImportConfirmation = false
     
+    private func getTagPath(for tag: Tag, in tags: [Tag]) -> String {
+        var path: [String] = []
+        
+        func findPath(currentTag: Tag, targetId: UUID, currentPath: [String]) -> [String]? {
+            if currentTag.id == targetId {
+                return currentPath + [currentTag.name]
+            }
+            
+            for child in currentTag.children {
+                if let foundPath = findPath(currentTag: child, targetId: targetId, currentPath: currentPath + [currentTag.name]) {
+                    return foundPath
+                }
+            }
+            
+            return nil
+        }
+        
+        for rootTag in tags {
+            if let foundPath = findPath(currentTag: rootTag, targetId: tag.id, currentPath: []) {
+                path = foundPath
+                break
+            }
+        }
+        
+        return path.joined(separator: " > ")
+    }
+    
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
@@ -28,7 +55,8 @@ struct TagsView: View {
                                collapsedTags: $collapsedTags,
                                selectedParentId: $selectedParentId,
                                showingAddTagSheet: $showingAddTagSheet,
-                               viewModel: viewModel, 
+                               viewModel: viewModel,
+                               tagPath: getTagPath(for: tag, in: viewModel.tags),
                                onColorChange: { newColor in
                             viewModel.updateTagColor(tagId: tag.id, color: newColor)
                         },

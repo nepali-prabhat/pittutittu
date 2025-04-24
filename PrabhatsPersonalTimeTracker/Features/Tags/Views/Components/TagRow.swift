@@ -7,6 +7,7 @@ struct TagRow: View {
     @Binding var selectedParentId: UUID?
     @Binding var showingAddTagSheet: Bool
     let viewModel: TagsViewModel
+    let tagPath: String
     var onColorChange: ((CatppuccinFrappe) -> Void)?
     var onDelete: ((Tag) -> Void)?
     var onEdit: ((Tag) -> Void)?
@@ -149,11 +150,11 @@ struct TagRow: View {
                 eventTitle: "",
                 eventStartDate: Date(),
                 eventEndDate: Date().addingTimeInterval(3600),
-                eventNotes: tag.name,
-                eventColor: tag.color.color
+                eventNotes: "",
+                eventColor: tag.color.color,
+                tagPath: tagPath
             )
         }
-        // .listRowSeparator(.hidden)
         .background(
             RoundedRectangle(cornerRadius: 4)
                 .fill(isTargeted ? Color.accentColor.opacity(0.1) : isHovered ? Color.secondary.opacity(0.1) : Color.clear)
@@ -201,7 +202,8 @@ struct TagRow: View {
                        collapsedTags: $collapsedTags,
                        selectedParentId: $selectedParentId,
                        showingAddTagSheet: $showingAddTagSheet,
-                       viewModel: viewModel, 
+                       viewModel: viewModel,
+                       tagPath: tagPath + " > " + child.name,
                        onColorChange: onColorChange,
                        onDelete: onDelete,
                        onEdit: onEdit)
@@ -230,6 +232,7 @@ struct TagRow: View {
         selectedParentId: .constant(nil),
         showingAddTagSheet: .constant(false),
         viewModel: TagsViewModel(),
+        tagPath: "Work > Meetings > Projects > Project A",
         onColorChange: { _ in },
         onDelete: { _ in },
         onEdit: { _ in }
