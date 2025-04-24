@@ -31,15 +31,25 @@ struct LogsView: View {
                     }
                     TableColumn("Tag Path", value: \.tagPath)
                     // NOTE: Don't delete this
-                    if false {
-                        TableColumn("Tag Color") { log in
-                            HStack {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color(hex: log.tagColor) ?? .gray)
-                                    .frame(width: 12, height: 12)
-                            }
+                    TableColumn("Tag Color") { log in
+                        HStack {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color(hex: log.tagColor) ?? .gray)
+                                .frame(width: 12, height: 12)
                         }
                     }
+                    TableColumn("EventId") { log in
+                        Text(log.calendarEventId)
+                            .contextMenu {
+                                Button(action: {
+                                    NSPasteboard.general.clearContents()
+                                    NSPasteboard.general.setString(log.calendarEventId, forType: .string)
+                                }) {
+                                    Label("Copy Event ID", systemImage: "doc.on.doc")
+                                }
+                            }
+                    }
+
                 }
                 // .padding()
                 .background(Color(NSColor.controlBackgroundColor))
