@@ -40,41 +40,40 @@ struct ActiveView: View {
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                                 .multilineTextAlignment(.center)
-                            
-                            Button(action: {
-                                navigateToTags = true
-                            }) {
-                                Label("Create New Event", systemImage: "plus.circle.fill")
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .padding(.top, 6)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 60)
                     } else {
-                        // Active events grid
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 300, maximum: 400), spacing: 16)], spacing: 16) {
-                            ForEach(activeLogs) { log in
-                                ActiveTagCard(log: log, onStop: {
-                                    viewModel.stopLog(calendarEventId: log.calendarEventId)
-                                })
+                        // Active events horizontal list
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 16) {
+                                ForEach(activeLogs) { log in
+                                    ActiveTagCard(log: log, onStop: {
+                                        viewModel.stopLog(calendarEventId: log.calendarEventId)
+                                    })
+                                    .frame(width: 300)
+                                }
                             }
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                     }
+                    
+                    // Create New Event button
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            navigateToTags = true
+                        }) {
+                            Label("track new event", systemImage: "plus.circle.fill")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        Spacer()
+                    }
+                    .padding(.top, 20)
                 }
             }
             .background(Color(NSColor.windowBackgroundColor))
             .navigationTitle("Active Events")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button(action: {
-                        navigateToTags = true
-                    }) {
-                        Label("New Event", systemImage: "plus")
-                    }
-                }
-            }
             .navigationDestination(isPresented: $navigateToTags) {
                 TagsView(onEventCreated: {
                     navigateToTags = false
@@ -137,15 +136,35 @@ struct ActiveTagCard: View {
                 }
             }
             
-            // Stop button
-            Button(action: {
-                showingStopConfirmation = true
-            }) {
-                Label("Stop", systemImage: "stop.circle.fill")
-                    .frame(maxWidth: .infinity)
+            // Action buttons
+            HStack(spacing: 12) {
+                Button(action: {
+                    // View action
+                }) {
+                    Label("View", systemImage: "eye")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(.blue)
+                
+                Button(action: {
+                    // Edit action
+                }) {
+                    Label("Edit", systemImage: "pencil")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(.orange)
+                
+                Button(action: {
+                    showingStopConfirmation = true
+                }) {
+                    Label("Stop", systemImage: "stop.circle.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.red)
         }
         .padding()
         .background(Color(NSColor.controlBackgroundColor))
