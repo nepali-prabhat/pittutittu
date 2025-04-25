@@ -24,7 +24,7 @@ struct ActiveView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
-                    .padding(.horizontal)
+                    // .padding(.horizontal)
                     .padding(.top, 8)
                     
                     if activeLogs.isEmpty {
@@ -48,34 +48,32 @@ struct ActiveView: View {
                     } else {
                         // Active events horizontal list
                         ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
+                            HStack(spacing: 12) {
                                 ForEach(activeLogs) { log in
                                     ActiveTagCard(log: log, onStop: {
                                         viewModel.stopLog(calendarEventId: log.calendarEventId)
                                     }, onEdit: {
                                         selectedLogForEdit = log
                                     })
-                                    .frame(width: 300)
+                                    // .frame(width: 300)
                                 }
                             }
-                            .padding(.horizontal)
+                            // .padding(.horizontal)
                         }
                     }
                     
                     // Create New Event button
                     HStack {
-                        Spacer()
                         Button(action: {
                             navigateToTags = true
                         }) {
                             Label("track new event", systemImage: "plus.circle.fill")
                         }
                         .buttonStyle(.borderedProminent)
-                        Spacer()
                     }
-                    .padding(.top, 20)
                 }
             }
+            .padding(.horizontal)
             .background(Color(NSColor.windowBackgroundColor))
             .navigationTitle("Active Events")
             .navigationDestination(isPresented: $navigateToTags) {
@@ -109,7 +107,7 @@ struct ActiveTagCard: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(log.title)
-                        .font(.title2)
+                        // .font(.title2)
                 }
             
             // Duration display
@@ -149,7 +147,7 @@ struct ActiveTagCard: View {
             }
             
             // Action buttons
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 Button(action: onEdit) {
                     Label("Edit", systemImage: "pencil")
                         .frame(maxWidth: .infinity)
@@ -169,7 +167,7 @@ struct ActiveTagCard: View {
         }
         .padding()
         .background(Color(NSColor.controlBackgroundColor))
-        .cornerRadius(12)
+        .cornerRadius(8)
         .alert("Stop Event?", isPresented: $showingStopConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Stop", role: .destructive) {
@@ -189,7 +187,7 @@ struct ActiveTagCard: View {
         if hours > 0 {
             return "\(hours)h \(minutes)m"
         } else if minutes > 0 {
-            return "\(minutes)m \(seconds)s"
+            return "\(minutes)m"
         } else {
             return "\(seconds)s"
         }
