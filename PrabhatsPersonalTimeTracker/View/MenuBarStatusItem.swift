@@ -27,8 +27,14 @@ class MenuBarStatusItem: NSObject {
         guard let statusItem = statusItem,
               let button = statusItem.button else { return }
         
-        button.image = NSImage(systemSymbolName: "clock.fill", accessibilityDescription: "Time Tracker")
-        button.imagePosition = .imageLeft
+        // Add border and styling
+        button.wantsLayer = true
+        button.layer?.cornerRadius = 4
+        button.layer?.borderWidth = 1
+        button.layer?.borderColor = NSColor.labelColor.cgColor
+        
+        // Add space after the title
+        button.title = button.title
         
         let menu = NSMenu()
         
@@ -112,9 +118,11 @@ class MenuBarStatusItem: NSObject {
         
         let activeLogs = viewModel.logs.filter { $0.timerEndDate == nil }
         
-        if let activeLog = activeLogs.first {
-            let duration = formatDuration(from: activeLog.startDate, to: Date())
-            button.title = duration
+        if !activeLogs.isEmpty {
+            let durations = activeLogs.map { log in
+                formatDuration(from: log.startDate, to: Date())
+            }
+            button.title = durations.joined(separator: " | ")
         } else {
             button.title = ""
         }
