@@ -187,7 +187,6 @@ struct CalendarEventView: View {
     
     private func createEvent() {
         let event = EKEvent(eventStore: eventStore)
-        let eventId = UUID().uuidString
         event.title = eventTitle
         event.startDate = eventStartDate
         event.endDate = eventEndDate
@@ -205,7 +204,7 @@ struct CalendarEventView: View {
         
         Tag Path: \(tagPath)
         Tag Color: \(eventColor.description)
-        Event ID: \(eventId)
+        Event ID: \(event.eventIdentifier ?? "no id yet")
         """
         event.notes = (event.notes ?? "") + tagInfo
         
@@ -214,7 +213,8 @@ struct CalendarEventView: View {
             
             // Save the log
             logViewModel.addLog(
-                calendarEventId: eventId,
+                calendarEventId: event.eventIdentifier,
+                calendarIdentifier: event.calendar.calendarIdentifier,
                 title: eventTitle,
                 startDate: eventStartDate,
                 endDate: eventEndDate,

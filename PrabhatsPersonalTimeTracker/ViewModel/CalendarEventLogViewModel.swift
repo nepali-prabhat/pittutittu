@@ -1,5 +1,6 @@
 import Foundation
 import CoreData
+import EventKit
 
 @MainActor
 class CalendarEventLogViewModel: ObservableObject {
@@ -22,9 +23,10 @@ class CalendarEventLogViewModel: ObservableObject {
         }
     }
     
-    func addLog(calendarEventId: String, title: String, startDate: Date, endDate: Date, timerEndDate: Date? = nil, tagPath: String, tagColor: String) {
+    func addLog(calendarEventId: String, calendarIdentifier: String, title: String, startDate: Date, endDate: Date, timerEndDate: Date? = nil, tagPath: String, tagColor: String) {
         let log = CalendarEventLog(
             calendarEventId: calendarEventId,
+            calendarIdentifier: calendarIdentifier,
             title: title,
             startDate: startDate,
             endDate: endDate,
@@ -47,9 +49,31 @@ class CalendarEventLogViewModel: ObservableObject {
                 entity.timerEndDate = Date()
                 CoreDataManager.shared.saveContext()
                 loadLogs()
+                
+                // Update the calendar event
+                updateCalendarEvent(calendarEventId: calendarEventId, endDate: Date())
             }
         } catch {
             print("Error stopping log: \(error)")
+        }
+    }
+    
+    private func updateCalendarEvent(calendarEventId: String, endDate: Date) {
+        let eventStore = EKEventStore()
+        
+        // Get the event directly using the event ID
+        if let event = eventStore.event(withIdentifier: calendarEventId) {
+            // Update the event's end date
+            event.endDate = endDate
+            
+            do {
+                try eventStore.save(event, span: .thisEvent)
+                print("Successfully updated calendar event")
+            } catch {
+                print("Error updating calendar event: \(error)")
+            }
+        } else {
+            print("Could not find calendar event with ID: \(calendarEventId)")
         }
     }
     

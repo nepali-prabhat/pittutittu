@@ -132,5 +132,193 @@
             landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5864E169-7103-48A2-8A70-DF86F258BC31"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "53"
+            endingLineNumber = "53"
+            landmarkName = "stopLog(calendarEventId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E1EC6DB2-8C2B-4499-B32A-CF25BECB935F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "47"
+            endingLineNumber = "47"
+            landmarkName = "stopLog(calendarEventId:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "E1EC6DB2-8C2B-4499-B32A-CF25BECB935F - 32986acb55ae815e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PrabhatsPersonalTimeTracker.CalendarEventLogViewModel.stopLog(calendarEventId: Swift.String) -&gt; ()"
+                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "48"
+                  endingLineNumber = "48">
+               </Location>
+               <Location
+                  uuid = "E1EC6DB2-8C2B-4499-B32A-CF25BECB935F - 32986acb55ae815e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PrabhatsPersonalTimeTracker.CalendarEventLogViewModel.stopLog(calendarEventId: Swift.String) -&gt; ()"
+                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "48"
+                  endingLineNumber = "48">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8FB24CBF-4D78-40FE-8360-219A53300972"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "68"
+            endingLineNumber = "68"
+            landmarkName = "updateCalendarEvent(calendarEventId:endDate:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B110A2DE-19BE-4DEB-A4DC-56F5D2B7C8F0"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
+            landmarkName = "updateCalendarEvent(calendarEventId:endDate:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "B110A2DE-19BE-4DEB-A4DC-56F5D2B7C8F0 - d61e97c364eef59a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PrabhatsPersonalTimeTracker.CalendarEventLogViewModel.updateCalendarEvent(calendarEventId: Swift.String, endDate: Foundation.Date) -&gt; ()"
+                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "65"
+                  endingLineNumber = "65">
+               </Location>
+               <Location
+                  uuid = "B110A2DE-19BE-4DEB-A4DC-56F5D2B7C8F0 - d61e97c364eef59a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PrabhatsPersonalTimeTracker.CalendarEventLogViewModel.updateCalendarEvent(calendarEventId: Swift.String, endDate: Foundation.Date) -&gt; ()"
+                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "65"
+                  endingLineNumber = "65">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0D909A84-4037-4E62-BD3D-22666A6FFC82"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "74"
+            endingLineNumber = "74"
+            landmarkName = "updateCalendarEvent(calendarEventId:endDate:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "AFEA20C1-ADC0-4C80-BEEF-717B4C3A407D"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "77"
+            endingLineNumber = "77"
+            landmarkName = "updateCalendarEvent(calendarEventId:endDate:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2DD3FF6D-7610-4048-8199-F7557992E582"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
+            landmarkName = "stopLog(calendarEventId:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "792C543B-A0AB-44CF-A7C4-FB1844EAFA9F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "76"
+            endingLineNumber = "76"
+            landmarkName = "updateCalendarEvent(calendarEventId:endDate:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

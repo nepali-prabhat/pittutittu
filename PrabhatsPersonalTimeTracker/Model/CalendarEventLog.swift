@@ -4,6 +4,7 @@ import CoreData
 struct CalendarEventLog: Identifiable, Hashable {
     let id: UUID
     let calendarEventId: String
+    let calendarIdentifier: String
     let title: String
     let startDate: Date
     let endDate: Date
@@ -11,9 +12,10 @@ struct CalendarEventLog: Identifiable, Hashable {
     let tagPath: String
     let tagColor: String
     
-    init(id: UUID = UUID(), calendarEventId: String, title: String, startDate: Date, endDate: Date, timerEndDate: Date? = nil, tagPath: String, tagColor: String) {
+    init(id: UUID = UUID(), calendarEventId: String, calendarIdentifier: String, title: String, startDate: Date, endDate: Date, timerEndDate: Date? = nil, tagPath: String, tagColor: String) {
         self.id = id
         self.calendarEventId = calendarEventId
+        self.calendarIdentifier = calendarIdentifier
         self.title = title
         self.startDate = startDate
         self.endDate = endDate
@@ -25,6 +27,7 @@ struct CalendarEventLog: Identifiable, Hashable {
     init(from entity: CalendarEventLogEntity) {
         self.id = entity.id ?? UUID()
         self.calendarEventId = entity.calendarEventId ?? ""
+        self.calendarIdentifier = entity.calendarIdentifier ?? ""
         self.title = entity.title ?? ""
         self.startDate = entity.startDate ?? Date()
         self.endDate = entity.endDate ?? Date()
@@ -37,6 +40,7 @@ struct CalendarEventLog: Identifiable, Hashable {
         let entity = CalendarEventLogEntity(context: context)
         entity.id = id
         entity.calendarEventId = calendarEventId
+        entity.calendarIdentifier = calendarIdentifier
         entity.title = title
         entity.startDate = startDate
         entity.endDate = endDate
