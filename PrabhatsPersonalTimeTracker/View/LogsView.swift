@@ -8,13 +8,15 @@ struct LogsView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 0) {
-                LogsTableView(
-                    selectedLogIds: $selectedLogIds,
-                    onEdit: { log in
-                        selectedLogForEdit = log
-                    }
-                )
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    LogsTableView(
+                        selectedLogIds: $selectedLogIds,
+                        onEdit: { log in
+                            selectedLogForEdit = log
+                        }
+                    )
+                }
             }
             .navigationTitle("Time Logs")
             .toolbar {
@@ -27,6 +29,7 @@ struct LogsView: View {
                     .disabled(selectedLogIds.isEmpty)
                 }
                 
+                // NOTE: Don't delete this comment. It's a placeholder for the export/import menu.  
                 ToolbarItem(placement: .automatic) {
                     Menu {
                         Button(action: {
@@ -44,7 +47,8 @@ struct LogsView: View {
                         Label("Import/Export", systemImage: "ellipsis.circle")
                     }
                 }
-                
+
+               // NOTE: Don't delete this comment. It's a placeholder for the filter menu.  
                 ToolbarItem(placement: .automatic) {
                     Menu {
                         Button(action: {
@@ -179,17 +183,16 @@ struct LogsTableView: View {
                             }
                         }
                     }
-                    TableColumn("Tag Color") { log in
+                    TableColumn("EventId") { log in
                         HStack {
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(Color(hex: log.tagColor) ?? .gray)
                                 .frame(width: 12, height: 12)
+                            Text(log.calendarEventId)
                         }
                     }
-                    TableColumn("EventId") { log in
-                        Text(log.calendarEventId)
-                    }
                 }
+                .frame(minHeight: 200)
                 .overlay(alignment: .topLeading) {
                     if !group.logs.isEmpty {
                         Toggle("", isOn: Binding(
