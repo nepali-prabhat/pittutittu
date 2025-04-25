@@ -38,7 +38,12 @@ struct CalendarEventView: View {
     
     var body: some View {
         Form {
-            
+            if !tagPath.isEmpty {
+                Section {
+                    Text(tagPath)
+                        .font(.title2)
+                }.padding(.vertical, 8)
+            }
             
             Section(header: Text("Calendar")) {
                 Picker("Calendar", selection: $selectedCalendarIdentifier) {
@@ -106,6 +111,7 @@ struct CalendarEventView: View {
         .alert("Event Creation", isPresented: $showAlert) {
             Button("OK", role: .cancel) {
                 dismiss()
+                
             }
         } message: {
             Text(alertMessage)

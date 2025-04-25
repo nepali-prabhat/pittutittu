@@ -17,6 +17,7 @@ struct TagsView: View {
     @State private var editTagColor: CatppuccinFrappe = .blue
     @State private var showingDeleteAllConfirmation = false
     @State private var showingImportConfirmation = false
+    var onEventCreated: (() -> Void)?
     
     private func getTagPath(for tag: Tag, in tags: [Tag]) -> String {
         var path: [String] = []

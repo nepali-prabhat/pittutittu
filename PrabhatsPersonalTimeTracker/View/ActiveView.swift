@@ -12,27 +12,73 @@ struct ActiveView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 300, maximum: 400), spacing: 16)], spacing: 16) {
-                    ForEach(activeLogs) { log in
-                        ActiveTagCard(log: log, onStop: {
-                            viewModel.stopLog(calendarEventId: log.calendarEventId)
-                        })
+                VStack(alignment: .leading, spacing: 20) {
+                    // Welcome message
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Welcome, Prabhat!")
+                            .font(.largeTitle)
+                            .bold()
+                        Text("Track your time and stay productive")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                    
+                    if activeLogs.isEmpty {
+                        // Empty state
+                        VStack(spacing: 12) {
+                            Image(systemName: "clock.badge.checkmark")
+                                .font(.system(size: 60))
+                                .foregroundStyle(.secondary)
+                            
+                            Text("No Active Events")
+                                .font(.title2)
+                                .bold()
+                            
+                            Text("Start tracking your time by creating a new event")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                            
+                            Button(action: {
+                                navigateToTags = true
+                            }) {
+                                Label("Create New Event", systemImage: "plus.circle.fill")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .padding(.top, 6)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 60)
+                    } else {
+                        // Active events grid
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 300, maximum: 400), spacing: 16)], spacing: 16) {
+                            ForEach(activeLogs) { log in
+                                ActiveTagCard(log: log, onStop: {
+                                    viewModel.stopLog(calendarEventId: log.calendarEventId)
+                                })
+                            }
+                        }
+                        .padding(.horizontal)
                     }
                 }
-                .padding()
             }
-            .navigationTitle("Active Tasks")
+            .background(Color(NSColor.windowBackgroundColor))
+            .navigationTitle("Active Events")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
                         navigateToTags = true
                     }) {
-                        Label("New Task", systemImage: "plus")
+                        Label("New Event", systemImage: "plus")
                     }
                 }
             }
             .navigationDestination(isPresented: $navigateToTags) {
-                TagsView()
+                TagsView(onEventCreated: {
+                    navigateToTags = false
+                })
             }
         }
     }
@@ -41,53 +87,60 @@ struct ActiveView: View {
 struct ActiveTagCard: View {
     let log: CalendarEventLog
     let onStop: () -> Void
+    @State private var showingStopConfirmation = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header with tag and title
+            HStack(alignment: .top) {
                 RoundedRectangle(cornerRadius: 4)
                     .fill(Color(hex: log.tagColor) ?? .gray)
-                    .frame(width: 12, height: 12)
-                Text(log.tagPath)
-                    .font(.subheadline)
+                    .frame(width: 8, height: 8)
+                    .padding(.top, 6)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(log.tagPath)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(log.title)
+                        .font(.headline)
+                }
+            }
+            
+            // Duration display
+            VStack(alignment: .leading, spacing: 4) {
+                Text(formatDuration(from: log.startDate, to: Date()))
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                
+                Text("Expected: \(formatDuration(from: log.startDate, to: log.endDate))")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
             
-            Text(log.title)
-                .font(.title2)
-                .bold()
-            
-            HStack {
-                VStack(alignment: .leading) {
+            // DateTime information
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
                     Text("Started")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(log.startDate.formatted(date: .abbreviated, time: .shortened))
-                        .font(.subheadline)
+                        .font(.caption)
                 }
                 
-                Spacer()
-                
-                VStack(alignment: .trailing) {
-                    Text("Expected End")
+                HStack {
+                    Text("Ends")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(log.endDate.formatted(date: .abbreviated, time: .shortened))
-                        .font(.subheadline)
+                        .font(.caption)
                 }
             }
             
-            HStack {
-                Text("Duration")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Text(formatDuration(from: log.startDate, to: Date()))
-                    .font(.subheadline)
-                    .monospacedDigit()
-            }
-            
-            Button(action: onStop) {
+            // Stop button
+            Button(action: {
+                showingStopConfirmation = true
+            }) {
                 Label("Stop", systemImage: "stop.circle.fill")
                     .frame(maxWidth: .infinity)
             }
@@ -97,7 +150,14 @@ struct ActiveTagCard: View {
         .padding()
         .background(Color(NSColor.controlBackgroundColor))
         .cornerRadius(12)
-        .shadow(radius: 2)
+        .alert("Stop Event?", isPresented: $showingStopConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Stop", role: .destructive) {
+                onStop()
+            }
+        } message: {
+            Text("Are you sure you want to stop this event? This action cannot be undone.")
+        }
     }
     
     private func formatDuration(from startDate: Date, to endDate: Date) -> String {

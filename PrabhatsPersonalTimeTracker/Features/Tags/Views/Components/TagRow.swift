@@ -144,8 +144,6 @@ struct TagRow: View {
             }
             .buttonStyle(.plain)
             .help("Start Timer")
-
-            
         }
          .padding(.trailing, 2)
         .contentShape(Rectangle())
