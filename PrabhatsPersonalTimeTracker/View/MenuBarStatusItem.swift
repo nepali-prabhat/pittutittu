@@ -29,26 +29,62 @@ class MenuBarStatusItem: NSObject {
         
         button.image = NSImage(systemSymbolName: "clock.fill", accessibilityDescription: "Time Tracker")
         button.imagePosition = .imageLeft
-        button.title = "Time Tracker"
         
         let menu = NSMenu()
         
         // Add menu items
-        menu.addItem(NSMenuItem(title: "Active Sessions", action: nil, keyEquivalent: ""))
+        let activeSessionsItem = NSMenuItem(title: "Active Sessions", action: nil, keyEquivalent: "")
+        activeSessionsItem.isEnabled = false
+        menu.addItem(activeSessionsItem)
         menu.addItem(NSMenuItem.separator())
         
         // Add active sessions
-        for log in viewModel.logs.filter({ $0.timerEndDate == nil }) {
-            let item = NSMenuItem(
-                title: "\(log.title) (\(formatDuration(from: log.startDate, to: Date())))",
-                action: #selector(openApp),
-                keyEquivalent: ""
-            )
-            menu.addItem(item)
+        let activeLogs = viewModel.logs.filter { $0.timerEndDate == nil }
+        if activeLogs.isEmpty {
+            let noActiveItem = NSMenuItem(title: "No active sessions", action: nil, keyEquivalent: "")
+            noActiveItem.isEnabled = false
+            menu.addItem(noActiveItem)
+        } else {
+            for log in activeLogs {
+                let item = NSMenuItem(
+                    title: "\(log.title) (\(formatDuration(from: log.startDate, to: Date())))",
+                    action: #selector(openApp),
+                    keyEquivalent: ""
+                )
+                item.target = self
+                menu.addItem(item)
+            }
         }
         
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        
+        // Add New Event item
+        let newEventItem = NSMenuItem(
+            title: "New Event",
+            action: #selector(openNewEvent),
+            keyEquivalent: "n"
+        )
+        newEventItem.target = self
+        menu.addItem(newEventItem)
+        
+        // Add Open App item
+        let openAppItem = NSMenuItem(
+            title: "Open App",
+            action: #selector(openApp),
+            keyEquivalent: "o"
+        )
+        openAppItem.target = self
+        menu.addItem(openAppItem)
+        
+        menu.addItem(NSMenuItem.separator())
+        
+        // Add Quit item
+        let quitItem = NSMenuItem(
+            title: "Quit",
+            action: #selector(NSApplication.terminate(_:)),
+            keyEquivalent: "q"
+        )
+        menu.addItem(quitItem)
         
         statusItem.menu = menu
     }
@@ -77,9 +113,10 @@ class MenuBarStatusItem: NSObject {
         let activeLogs = viewModel.logs.filter { $0.timerEndDate == nil }
         
         if let activeLog = activeLogs.first {
-            button.title = "\(activeLog.title) (\(formatDuration(from: activeLog.startDate, to: Date())))"
+            let duration = formatDuration(from: activeLog.startDate, to: Date())
+            button.title = duration
         } else {
-            button.title = "Time Tracker"
+            button.title = ""
         }
         
         // Update menu items
@@ -88,6 +125,12 @@ class MenuBarStatusItem: NSObject {
     
     @objc private func openApp() {
         NSApp.activate(ignoringOtherApps: true)
+    }
+    
+    @objc private func openNewEvent() {
+        NSApp.activate(ignoringOtherApps: true)
+        // Post a notification to open the new event view
+        NotificationCenter.default.post(name: NSNotification.Name("OpenNewEvent"), object: nil)
     }
     
     private func formatDuration(from startDate: Date, to endDate: Date) -> String {
