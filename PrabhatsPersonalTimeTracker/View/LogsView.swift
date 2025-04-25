@@ -12,9 +12,7 @@ struct LogsView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     LogsTableView(
                         selectedLogIds: $selectedLogIds,
-                        onEdit: { log in
-                            selectedLogForEdit = log
-                        }
+                        selectedLogForEdit: $selectedLogForEdit
                     )
                 }
             }
@@ -47,8 +45,8 @@ struct LogsView: View {
                         Label("Import/Export", systemImage: "ellipsis.circle")
                     }
                 }
-
-               // NOTE: Don't delete this comment. It's a placeholder for the filter menu.  
+                
+                // NOTE: Don't delete this comment. It's a placeholder for the filter menu.  
                 ToolbarItem(placement: .automatic) {
                     Menu {
                         Button(action: {
@@ -93,7 +91,7 @@ struct LogGroup: Identifiable {
 struct LogsTableView: View {
     @ObservedObject private var viewModel = CalendarEventLogViewModel.shared
     @Binding var selectedLogIds: Set<UUID>
-    let onEdit: (CalendarEventLog) -> Void
+    @Binding var selectedLogForEdit: CalendarEventLog?
     @State private var logToDelete: CalendarEventLog?
     
     private var groupedLogs: [LogGroup] {
@@ -114,85 +112,87 @@ struct LogsTableView: View {
                     .padding(.horizontal)
                     .padding(.vertical, 8)
                 
-                Table(group.logs) {
-                    TableColumn("") { log in
-                        HStack(spacing: 4) {
-                            Toggle("", isOn: Binding(
-                                get: { selectedLogIds.contains(log.id) },
-                                set: { isSelected in
-                                    if isSelected {
-                                        selectedLogIds.insert(log.id)
-                                    } else {
-                                        selectedLogIds.remove(log.id)
+                VStack(spacing: 0) {
+                    Table(group.logs) {
+                        TableColumn("") { log in
+                            HStack(spacing: 4) {
+                                Toggle("", isOn: Binding(
+                                    get: { selectedLogIds.contains(log.id) },
+                                    set: { isSelected in
+                                        if isSelected {
+                                            selectedLogIds.insert(log.id)
+                                        } else {
+                                            selectedLogIds.remove(log.id)
+                                        }
                                     }
-                                }
-                            ))
-                            .toggleStyle(.checkbox)
-                            .labelsHidden()
-                            
-                            Menu {
-                                Button(action: {
-                                    onEdit(log)
-                                }) {
-                                    Label("Edit Event", systemImage: "pencil")
-                                }
+                                ))
+                                .toggleStyle(.checkbox)
+                                .labelsHidden()
                                 
-                                Button(action: {
-                                    NSPasteboard.general.clearContents()
-                                    NSPasteboard.general.setString(log.calendarEventId, forType: .string)
-                                }) {
-                                    Label("Copy Event ID", systemImage: "doc.on.doc")
+                                Menu {
+                                    Button(action: {
+                                        selectedLogForEdit = log
+                                    }) {
+                                        Label("Edit Event", systemImage: "pencil")
+                                    }
+                                    
+                                    Button(action: {
+                                        NSPasteboard.general.clearContents()
+                                        NSPasteboard.general.setString(log.calendarEventId, forType: .string)
+                                    }) {
+                                        Label("Copy Event ID", systemImage: "doc.on.doc")
+                                    }
+                                    
+                                    Button(role: .destructive, action: {
+                                        logToDelete = log
+                                    }) {
+                                        Label("Delete Event", systemImage: "trash")
+                                    }
+                                } label: {
+                                    Image(systemName: "ellipsis.circle")
+                                        .foregroundStyle(.secondary)
                                 }
-                                
-                                Button(role: .destructive, action: {
-                                    logToDelete = log
-                                }) {
-                                    Label("Delete Event", systemImage: "trash")
-                                }
-                            } label: {
-                                Image(systemName: "ellipsis.circle")
-                                    .foregroundStyle(.secondary)
+                                .menuStyle(.borderlessButton)
+                                .menuIndicator(.hidden)
                             }
-                            .menuStyle(.borderlessButton)
-                            .menuIndicator(.hidden)
+                            .frame(width: 40)
                         }
-                        .frame(width: 40)
-                    }
-                    .width(40)
-                    
-                    TableColumn("Title", value: \.title)
-                    TableColumn("Tag Path", value: \.tagPath)
-                    TableColumn("Start Time") { log in
-                        Text(log.startDate.formatted(date: .omitted, time: .shortened))
-                    }
-                    TableColumn("Timer End") { log in
-                        if let timerEndDate = log.timerEndDate {
-                            Text(timerEndDate.formatted(date: .omitted, time: .shortened))
-                        } else {
-                            Text("-")
+                        .width(40)
+                        
+                        TableColumn("Title", value: \.title)
+                        TableColumn("Tag Path", value: \.tagPath)
+                        TableColumn("Start Time") { log in
+                            Text(log.startDate.formatted(date: .omitted, time: .shortened))
                         }
-                    }
-                    TableColumn("Expected End Time") { log in
-                        Text(log.endDate.formatted(date: .omitted, time: .shortened))
-                    }
-                    TableColumn("Duration") { log in
-                        HStack {
-                            Text(formatDuration(from: log.startDate, to: log.timerEndDate ?? log.endDate))
-                            if log.timerEndDate == nil {
-                                Text("(expected)")
+                        TableColumn("Timer End") { log in
+                            if let timerEndDate = log.timerEndDate {
+                                Text(timerEndDate.formatted(date: .omitted, time: .shortened))
+                            } else {
+                                Text("-")
                             }
                         }
-                    }
-                    TableColumn("EventId") { log in
-                        HStack {
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color(hex: log.tagColor) ?? .gray)
-                                .frame(width: 12, height: 12)
-                            Text(log.calendarEventId)
+                        TableColumn("Duration") { log in
+                            HStack {
+                                Text(formatDuration(from: log.startDate, to: log.timerEndDate ?? log.endDate))
+                                if log.timerEndDate == nil {
+                                    Text("(expected)")
+                                }
+                            }
+                        }
+                        TableColumn("Expected End Time") { log in
+                            Text(log.endDate.formatted(date: .omitted, time: .shortened))
+                        }
+                        TableColumn("EventId") { log in
+                            HStack {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Color(hex: log.tagColor) ?? .gray)
+                                    .frame(width: 12, height: 12)
+                                Text(log.calendarEventId)
+                            }
                         }
                     }
+                    .frame(minHeight: 200)
                 }
-                .frame(minHeight: 200)
                 .overlay(alignment: .topLeading) {
                     if !group.logs.isEmpty {
                         Toggle("", isOn: Binding(
