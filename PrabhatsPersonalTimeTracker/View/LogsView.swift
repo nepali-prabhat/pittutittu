@@ -4,13 +4,17 @@ struct LogsView: View {
     @StateObject private var viewModel = CalendarEventLogViewModel.shared
     @State private var selectedLogIds: Set<UUID> = []
     @State private var showingDeleteConfirmation = false
+    @State private var selectedLogForEdit: CalendarEventLog?
     
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
                 LogsTableView(
                     logs: viewModel.logs,
-                    selectedLogIds: $selectedLogIds
+                    selectedLogIds: $selectedLogIds,
+                    onEdit: { log in
+                        selectedLogForEdit = log
+                    }
                 )
             }
             .navigationTitle("Time Logs")
@@ -71,6 +75,9 @@ struct LogsView: View {
             } message: {
                 Text("Are you sure you want to delete \(selectedLogIds.count) selected log(s)? This action cannot be undone.")
             }
+            .sheet(item: $selectedLogForEdit) { log in
+                EditLogView(log: log, viewModel: viewModel)
+            }
         }
     }
 }
@@ -78,6 +85,7 @@ struct LogsView: View {
 struct LogsTableView: View {
     let logs: [CalendarEventLog]
     @Binding var selectedLogIds: Set<UUID>
+    let onEdit: (CalendarEventLog) -> Void
     
     var body: some View {
         Table(logs) {
@@ -140,6 +148,12 @@ struct LogsTableView: View {
                             NSPasteboard.general.setString(log.calendarEventId, forType: .string)
                         }) {
                             Label("Copy Event ID", systemImage: "doc.on.doc")
+                        }
+                        
+                        Button(action: {
+                            onEdit(log)
+                        }) {
+                            Label("Edit Event", systemImage: "pencil")
                         }
                     }
             }

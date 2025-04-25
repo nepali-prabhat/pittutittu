@@ -107,7 +107,6 @@ struct ActiveTagCard: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(log.title)
-                        // .font(.title2)
                 }
             
             // Duration display
