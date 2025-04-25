@@ -91,4 +91,47 @@ class CalendarEventLogViewModel: ObservableObject {
             print("Error deleting log: \(error)")
         }
     }
+    
+    func editLog(calendarEventId: String, title: String, startDate: Date, endDate: Date, timerEndDate: Date? = nil, tagPath: String, tagColor: String) {
+        let fetchRequest: NSFetchRequest<CalendarEventLogEntity> = CalendarEventLogEntity.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "calendarEventId == %@", calendarEventId)
+        
+        do {
+            if let entity = try context.fetch(fetchRequest).first {
+                entity.title = title
+                entity.startDate = startDate
+                entity.endDate = endDate
+                entity.timerEndDate = timerEndDate
+                entity.tagPath = tagPath
+                entity.tagColor = tagColor
+                
+                CoreDataManager.shared.saveContext()
+                loadLogs()
+                
+                // Update the calendar event
+                updateCalendarEvent(calendarEventId: calendarEventId, title: title, startDate: startDate, endDate: endDate)
+            }
+        } catch {
+            print("Error editing log: \(error)")
+        }
+    }
+    
+    private func updateCalendarEvent(calendarEventId: String, title: String, startDate: Date, endDate: Date) {
+        let eventStore = EKEventStore()
+        
+        if let event = eventStore.event(withIdentifier: calendarEventId) {
+            event.title = title
+            event.startDate = startDate
+            event.endDate = endDate
+            
+            do {
+                try eventStore.save(event, span: .thisEvent)
+                print("Successfully updated calendar event")
+            } catch {
+                print("Error updating calendar event: \(error)")
+            }
+        } else {
+            print("Could not find calendar event with identifier: \(calendarEventId)")
+        }
+    }
 } 

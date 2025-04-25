@@ -2,8 +2,10 @@ import SwiftUI
 
 struct ActiveView: View {
     @StateObject private var viewModel = CalendarEventLogViewModel()
+    @StateObject private var tagsViewModel = TagsViewModel()
     @State private var showingCalendarEventSheet = false
     @State private var navigateToTags = false
+    @State private var selectedLogForEdit: CalendarEventLog?
     
     private var activeLogs: [CalendarEventLog] {
         viewModel.logs.filter { $0.timerEndDate == nil }
@@ -50,6 +52,8 @@ struct ActiveView: View {
                                 ForEach(activeLogs) { log in
                                     ActiveTagCard(log: log, onStop: {
                                         viewModel.stopLog(calendarEventId: log.calendarEventId)
+                                    }, onEdit: {
+                                        selectedLogForEdit = log
                                     })
                                     .frame(width: 300)
                                 }
@@ -79,6 +83,9 @@ struct ActiveView: View {
                     navigateToTags = false
                 })
             }
+            .sheet(item: $selectedLogForEdit) { log in
+                EditLogView(log: log, viewModel: viewModel)
+            }
         }
     }
 }
@@ -86,30 +93,24 @@ struct ActiveView: View {
 struct ActiveTagCard: View {
     let log: CalendarEventLog
     let onStop: () -> Void
+    let onEdit: () -> Void
     @State private var showingStopConfirmation = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Header with tag and title
-            HStack(alignment: .top) {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color(hex: log.tagColor) ?? .gray)
-                    .frame(width: 8, height: 8)
-                    .padding(.top, 6)
-                
                 VStack(alignment: .leading, spacing: 4) {
                     Text(log.tagPath)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(log.title)
-                        .font(.headline)
+                        .font(.title2)
                 }
-            }
             
             // Duration display
             VStack(alignment: .leading, spacing: 4) {
                 Text(formatDuration(from: log.startDate, to: Date()))
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
                     .monospacedDigit()
                 
                 Text("Expected: \(formatDuration(from: log.startDate, to: log.endDate))")
@@ -138,23 +139,12 @@ struct ActiveTagCard: View {
             
             // Action buttons
             HStack(spacing: 12) {
-                Button(action: {
-                    // View action
-                }) {
-                    Label("View", systemImage: "eye")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-                .tint(.blue)
-                
-                Button(action: {
-                    // Edit action
-                }) {
+                Button(action: onEdit) {
                     Label("Edit", systemImage: "pencil")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
                 .tint(.orange)
+                // .buttonStyle(.bordered)
                 
                 Button(action: {
                     showingStopConfirmation = true

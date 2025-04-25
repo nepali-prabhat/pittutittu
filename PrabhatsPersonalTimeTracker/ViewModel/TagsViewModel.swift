@@ -66,7 +66,7 @@ class TagsViewModel: ObservableObject {
                 print("Error adding child tag: \(error)")
             }
         } else {
-            let entity = newTag.toEntity(in: context)
+            _ = newTag.toEntity(in: context)
             CoreDataManager.shared.saveContext()
             loadTags()
         }
@@ -223,5 +223,9 @@ class TagsViewModel: ObservableObject {
         } catch {
             print("Error deleting tag: \(error)")
         }
+    }
+    
+    func findTagByPath(_ path: String) -> Tag? {
+        return tags.first { $0.name == path }
     }
 } 
