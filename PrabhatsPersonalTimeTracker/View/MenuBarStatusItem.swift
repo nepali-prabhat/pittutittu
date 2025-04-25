@@ -33,9 +33,6 @@ class MenuBarStatusItem: NSObject {
         button.layer?.borderWidth = 1
         button.layer?.borderColor = NSColor.labelColor.cgColor
         
-        // Add space after the title
-        button.title = button.title
-        
         let menu = NSMenu()
         
         // Add menu items
@@ -63,15 +60,6 @@ class MenuBarStatusItem: NSObject {
         }
         
         menu.addItem(NSMenuItem.separator())
-        
-        // Add New Event item
-        let newEventItem = NSMenuItem(
-            title: "New Event",
-            action: #selector(openNewEvent),
-            keyEquivalent: "n"
-        )
-        newEventItem.target = self
-        menu.addItem(newEventItem)
         
         // Add Open App item
         let openAppItem = NSMenuItem(
@@ -132,13 +120,17 @@ class MenuBarStatusItem: NSObject {
     }
     
     @objc private func openApp() {
+        // Bring the app to the front
         NSApp.activate(ignoringOtherApps: true)
-    }
-    
-    @objc private func openNewEvent() {
-        NSApp.activate(ignoringOtherApps: true)
-        // Post a notification to open the new event view
-        NotificationCenter.default.post(name: NSNotification.Name("OpenNewEvent"), object: nil)
+        
+        // Make sure the app is visible
+        if let window = NSApp.windows.first {
+            window.makeKeyAndOrderFront(nil)
+            window.orderFrontRegardless()
+        }
+        
+        // Ensure the app is the active application
+        NSApp.setActivationPolicy(.regular)
     }
     
     private func formatDuration(from startDate: Date, to endDate: Date) -> String {
