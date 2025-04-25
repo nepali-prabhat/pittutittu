@@ -81,88 +81,108 @@ struct LogsView: View {
     }
 }
 
+struct LogGroup: Identifiable {
+    let id: Date
+    let logs: [CalendarEventLog]
+}
+
 struct LogsTableView: View {
     @ObservedObject private var viewModel = CalendarEventLogViewModel.shared
     @Binding var selectedLogIds: Set<UUID>
     let onEdit: (CalendarEventLog) -> Void
     
+    private var groupedLogs: [LogGroup] {
+        let calendar = Calendar.current
+        let grouped = Dictionary(grouping: viewModel.logs) { log in
+            calendar.startOfDay(for: log.startDate)
+        }
+        return grouped.map { LogGroup(id: $0.key, logs: $0.value) }
+            .sorted { $0.id > $1.id }
+    }
+    
     var body: some View {
-        Table(viewModel.logs) {
-            TableColumn("") { log in
-                HStack(spacing: 4) {
-                    Toggle("", isOn: Binding(
-                        get: { selectedLogIds.contains(log.id) },
-                        set: { isSelected in
-                            if isSelected {
-                                selectedLogIds.insert(log.id)
-                            } else {
-                                selectedLogIds.remove(log.id)
+        ForEach(groupedLogs) { group in
+            VStack(alignment: .leading, spacing: 0) {
+                Text(group.id.formatted(date: .complete, time: .omitted))
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                
+                Table(group.logs) {
+                    TableColumn("") { log in
+                        HStack(spacing: 4) {
+                            Toggle("", isOn: Binding(
+                                get: { selectedLogIds.contains(log.id) },
+                                set: { isSelected in
+                                    if isSelected {
+                                        selectedLogIds.insert(log.id)
+                                    } else {
+                                        selectedLogIds.remove(log.id)
+                                    }
+                                }
+                            ))
+                            .toggleStyle(.checkbox)
+                            .labelsHidden()
+                            
+                            Menu {
+                                Button(action: {
+                                    NSPasteboard.general.clearContents()
+                                    NSPasteboard.general.setString(log.calendarEventId, forType: .string)
+                                }) {
+                                    Label("Copy Event ID", systemImage: "doc.on.doc")
+                                }
+                                
+                                Button(action: {
+                                    onEdit(log)
+                                }) {
+                                    Label("Edit Event", systemImage: "pencil")
+                                }
+                            } label: {
+                                Image(systemName: "ellipsis.circle")
+                                    .foregroundStyle(.secondary)
+                            }
+                            .menuStyle(.borderlessButton)
+                            .menuIndicator(.hidden)
+                        }
+                        .frame(width: 60)
+                    }
+                    .width(60)
+                    
+                    TableColumn("Title", value: \.title)
+                    TableColumn("Tag Path", value: \.tagPath)
+                    TableColumn("Start Time") { log in
+                        Text(log.startDate.formatted(date: .omitted, time: .shortened))
+                    }
+                    TableColumn("Timer End") { log in
+                        if let timerEndDate = log.timerEndDate {
+                            Text(timerEndDate.formatted(date: .omitted, time: .shortened))
+                        } else {
+                            Text("-")
+                        }
+                    }
+                    TableColumn("Expected End Time") { log in
+                        Text(log.endDate.formatted(date: .omitted, time: .shortened))
+                    }
+                    TableColumn("Duration") { log in
+                        HStack {
+                            Text(formatDuration(from: log.startDate, to: log.timerEndDate ?? log.endDate))
+                            if log.timerEndDate == nil {
+                                Text("(expected)")
                             }
                         }
-                    ))
-                    .toggleStyle(.checkbox)
-                    .labelsHidden()
-                    
-                    Menu {
-                        Button(action: {
-                            NSPasteboard.general.clearContents()
-                            NSPasteboard.general.setString(log.calendarEventId, forType: .string)
-                        }) {
-                            Label("Copy Event ID", systemImage: "doc.on.doc")
-                        }
-                        
-                        Button(action: {
-                            onEdit(log)
-                        }) {
-                            Label("Edit Event", systemImage: "pencil")
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                            .foregroundStyle(.secondary)
                     }
-                    .menuStyle(.borderlessButton)
-                    .menuIndicator(.hidden)
-                }
-                .frame(width: 60)
-            }
-            .width(60)
-            
-            TableColumn("Title", value: \.title)
-            TableColumn("Start Time") { log in
-                Text(log.startDate.formatted(date: .abbreviated, time: .shortened))
-            }
-            TableColumn("Expected End Time") { log in
-                Text(log.endDate.formatted(date: .abbreviated, time: .shortened))
-            }
-            TableColumn("Timer End") { log in
-                if let timerEndDate = log.timerEndDate {
-                    Text(timerEndDate.formatted(date: .abbreviated, time: .shortened))
-                } else {
-                    Text("-")
-                }
-            }
-            TableColumn("Duration") { log in
-                HStack {
-                    Text(formatDuration(from: log.startDate, to: log.timerEndDate ?? log.endDate))
-                    if log.timerEndDate == nil {
-                        Text("(expected)")
+                    TableColumn("Tag Color") { log in
+                        HStack {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color(hex: log.tagColor) ?? .gray)
+                                .frame(width: 12, height: 12)
+                        }
                     }
-                }
-            }
-            TableColumn("Tag Path", value: \.tagPath)
-            TableColumn("Tag Color") { log in
-                HStack {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(hex: log.tagColor) ?? .gray)
-                        .frame(width: 12, height: 12)
-                }
-            }
-            TableColumn("EventId") { log in
-                Text(log.calendarEventId)
-            }
-        }
-        .background(Color(NSColor.controlBackgroundColor))
-        .overlay(alignment: .topLeading) {
+                    TableColumn("EventId") { log in
+                        Text(log.calendarEventId)
+                    }
+                }.overlay(alignment: .topLeading) {
             if !viewModel.logs.isEmpty {
                     Toggle("", isOn: Binding(
                         get: { selectedLogIds.count == viewModel.logs.count },
@@ -180,6 +200,9 @@ struct LogsTableView: View {
                 .padding(.top, 8)
             }
         }
+            }
+        }
+        .background(Color(NSColor.controlBackgroundColor))
     }
     
     private func formatDuration(from startDate: Date, to endDate: Date) -> String {
