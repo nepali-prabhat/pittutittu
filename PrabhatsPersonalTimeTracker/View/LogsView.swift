@@ -4,15 +4,13 @@ struct LogsView: View {
     @StateObject private var viewModel = CalendarEventLogViewModel.shared
     @State private var selectedLogIds: Set<UUID> = []
     @State private var showingDeleteConfirmation = false
-    @State private var selectedLogForEdit: CalendarEventLog?
     
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     LogsTableView(
-                        selectedLogIds: $selectedLogIds,
-                        selectedLogForEdit: $selectedLogForEdit
+                        selectedLogIds: $selectedLogIds
                     )
                 }
             }
@@ -76,7 +74,7 @@ struct LogsView: View {
             } message: {
                 Text("Are you sure you want to delete \(selectedLogIds.count) selected log(s)? This action cannot be undone.")
             }
-            .sheet(item: $selectedLogForEdit) { log in
+            .sheet(item: $viewModel.selectedLogForEdit) { log in
                 EditLogView(log: log, viewModel: viewModel)
             }
         }
@@ -91,7 +89,6 @@ struct LogGroup: Identifiable {
 struct LogsTableView: View {
     @ObservedObject private var viewModel = CalendarEventLogViewModel.shared
     @Binding var selectedLogIds: Set<UUID>
-    @Binding var selectedLogForEdit: CalendarEventLog?
     @State private var logToDelete: CalendarEventLog?
     
     private var groupedLogs: [LogGroup] {
@@ -131,7 +128,7 @@ struct LogsTableView: View {
                                 
                                 Menu {
                                     Button(action: {
-                                        selectedLogForEdit = log
+                                        viewModel.selectedLogForEdit = log
                                     }) {
                                         Label("Edit Event", systemImage: "pencil")
                                     }

@@ -7,6 +7,7 @@ class CalendarEventLogViewModel: ObservableObject {
     static let shared = CalendarEventLogViewModel()
     
     @Published var logs: [CalendarEventLog] = []
+    @Published var selectedLogForEdit: CalendarEventLog?
     let context = CoreDataManager.shared.viewContext
     
     init() {
@@ -108,10 +109,13 @@ class CalendarEventLogViewModel: ObservableObject {
                 entity.tagColor = tagColor
                 
                 CoreDataManager.shared.saveContext()
-                loadLogs()
                 
                 // Update the calendar event
                 updateCalendarEvent(calendarEventId: calendarEventId, title: title, startDate: startDate, endDate: endDate)
+                
+                // Reload logs and clear the selected log
+                loadLogs()
+                selectedLogForEdit = nil
             }
         } catch {
             print("Error editing log: \(error)")
