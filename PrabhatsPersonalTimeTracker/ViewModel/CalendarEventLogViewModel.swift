@@ -4,6 +4,8 @@ import EventKit
 
 @MainActor
 class CalendarEventLogViewModel: ObservableObject {
+    static let shared = CalendarEventLogViewModel()
+    
     @Published var logs: [CalendarEventLog] = []
     let context = CoreDataManager.shared.viewContext
     

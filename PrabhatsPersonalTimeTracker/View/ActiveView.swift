@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ActiveView: View {
-    @StateObject private var viewModel = CalendarEventLogViewModel()
+    @StateObject private var viewModel = CalendarEventLogViewModel.shared
     @StateObject private var tagsViewModel = TagsViewModel()
     @State private var showingCalendarEventSheet = false
     @State private var navigateToTags = false
@@ -86,6 +86,9 @@ struct ActiveView: View {
             .sheet(item: $selectedLogForEdit) { log in
                 EditLogView(log: log, viewModel: viewModel)
             }
+            .onAppear {
+                viewModel.loadLogs()
+            }
         }
     }
 }
@@ -95,6 +98,8 @@ struct ActiveTagCard: View {
     let onStop: () -> Void
     let onEdit: () -> Void
     @State private var showingStopConfirmation = false
+    @State private var currentDuration: String = ""
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -109,9 +114,15 @@ struct ActiveTagCard: View {
             
             // Duration display
             VStack(alignment: .leading, spacing: 4) {
-                Text(formatDuration(from: log.startDate, to: Date()))
+                Text(currentDuration)
                     .font(.system(size: 24, weight: .bold, design: .rounded))
                     .monospacedDigit()
+                    .onReceive(timer) { _ in
+                        currentDuration = formatDuration(from: log.startDate, to: Date())
+                    }
+                    .onAppear {
+                        currentDuration = formatDuration(from: log.startDate, to: Date())
+                    }
                 
                 Text("Expected: \(formatDuration(from: log.startDate, to: log.endDate))")
                     .font(.caption)
@@ -173,11 +184,14 @@ struct ActiveTagCard: View {
         let duration = endDate.timeIntervalSince(startDate)
         let hours = Int(duration) / 3600
         let minutes = (Int(duration) % 3600) / 60
+        let seconds = Int(duration) % 60
         
         if hours > 0 {
             return "\(hours)h \(minutes)m"
+        } else if minutes > 0 {
+            return "\(minutes)m \(seconds)s"
         } else {
-            return "\(minutes)m"
+            return "\(seconds)s"
         }
     }
 }

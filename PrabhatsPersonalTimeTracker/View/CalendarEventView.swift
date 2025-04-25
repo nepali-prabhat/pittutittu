@@ -13,7 +13,7 @@ struct CalendarEventView: View {
     @State private var availableCalendars: [EKCalendar] = []
     @State private var selectedCalendarIdentifier: String
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var logViewModel = CalendarEventLogViewModel()
+    @StateObject private var logViewModel = CalendarEventLogViewModel.shared
     @FocusState private var isTitleFocused: Bool
     
     private let eventStore = EKEventStore()

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LogsView: View {
-    @StateObject private var viewModel = CalendarEventLogViewModel()
+    @StateObject private var viewModel = CalendarEventLogViewModel.shared
     @State private var selectedLogIds: Set<UUID> = []
     @State private var showingDeleteConfirmation = false
     
