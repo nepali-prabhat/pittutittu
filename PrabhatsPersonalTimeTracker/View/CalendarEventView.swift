@@ -47,7 +47,7 @@ struct CalendarEventView: View {
                             .tag(calendar.calendarIdentifier)
                     }
                 }
-                .onChange(of: selectedCalendarIdentifier) { newValue in
+                .onChange(of: selectedCalendarIdentifier) { oldValue, newValue in
                     UserDefaultsManager.shared.saveSelectedCalendar(newValue)
                 }
             }

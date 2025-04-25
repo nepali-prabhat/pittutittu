@@ -162,36 +162,6 @@
             endingLineNumber = "47"
             landmarkName = "stopLog(calendarEventId:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E1EC6DB2-8C2B-4499-B32A-CF25BECB935F - 32986acb55ae815e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PrabhatsPersonalTimeTracker.CalendarEventLogViewModel.stopLog(calendarEventId: Swift.String) -&gt; ()"
-                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48">
-               </Location>
-               <Location
-                  uuid = "E1EC6DB2-8C2B-4499-B32A-CF25BECB935F - 32986acb55ae815e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PrabhatsPersonalTimeTracker.CalendarEventLogViewModel.stopLog(calendarEventId: Swift.String) -&gt; ()"
-                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -224,36 +194,6 @@
             endingLineNumber = "64"
             landmarkName = "updateCalendarEvent(calendarEventId:endDate:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "B110A2DE-19BE-4DEB-A4DC-56F5D2B7C8F0 - d61e97c364eef59a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PrabhatsPersonalTimeTracker.CalendarEventLogViewModel.updateCalendarEvent(calendarEventId: Swift.String, endDate: Foundation.Date) -&gt; ()"
-                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "65"
-                  endingLineNumber = "65">
-               </Location>
-               <Location
-                  uuid = "B110A2DE-19BE-4DEB-A4DC-56F5D2B7C8F0 - d61e97c364eef59a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PrabhatsPersonalTimeTracker.CalendarEventLogViewModel.updateCalendarEvent(calendarEventId: Swift.String, endDate: Foundation.Date) -&gt; ()"
-                  moduleName = "PrabhatsPersonalTimeTracker.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/pravatpandey/Documents/code/personal/PrabhatsPersonalTimeTracker/PrabhatsPersonalTimeTracker/ViewModel/CalendarEventLogViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "65"
-                  endingLineNumber = "65">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

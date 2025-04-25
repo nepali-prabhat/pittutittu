@@ -61,7 +61,7 @@ class CalendarEventLogViewModel: ObservableObject {
     private func updateCalendarEvent(calendarEventId: String, endDate: Date) {
         let eventStore = EKEventStore()
         
-        // Get the event directly using the event ID
+        // Get the event directly using the event identifier
         if let event = eventStore.event(withIdentifier: calendarEventId) {
             // Update the event's end date
             event.endDate = endDate
@@ -73,7 +73,7 @@ class CalendarEventLogViewModel: ObservableObject {
                 print("Error updating calendar event: \(error)")
             }
         } else {
-            print("Could not find calendar event with ID: \(calendarEventId)")
+            print("Could not find calendar event with identifier: \(calendarEventId)")
         }
     }
     
