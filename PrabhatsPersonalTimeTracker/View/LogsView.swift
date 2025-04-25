@@ -10,7 +10,6 @@ struct LogsView: View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 0) {
                 LogsTableView(
-                    logs: viewModel.logs,
                     selectedLogIds: $selectedLogIds,
                     onEdit: { log in
                         selectedLogForEdit = log
@@ -83,12 +82,12 @@ struct LogsView: View {
 }
 
 struct LogsTableView: View {
-    let logs: [CalendarEventLog]
+    @ObservedObject private var viewModel = CalendarEventLogViewModel.shared
     @Binding var selectedLogIds: Set<UUID>
     let onEdit: (CalendarEventLog) -> Void
     
     var body: some View {
-        Table(logs) {
+        Table(viewModel.logs) {
             TableColumn("") { log in
                 HStack {
                     Spacer()
@@ -160,12 +159,12 @@ struct LogsTableView: View {
         }
         .background(Color(NSColor.controlBackgroundColor))
         .overlay(alignment: .topLeading) {
-            if !logs.isEmpty {
+            if !viewModel.logs.isEmpty {
                     Toggle("", isOn: Binding(
-                        get: { selectedLogIds.count == logs.count },
+                        get: { selectedLogIds.count == viewModel.logs.count },
                         set: { isSelected in
                             if isSelected {
-                                selectedLogIds = Set(logs.map { $0.id })
+                                selectedLogIds = Set(viewModel.logs.map { $0.id })
                             } else {
                                 selectedLogIds.removeAll()
                             }
