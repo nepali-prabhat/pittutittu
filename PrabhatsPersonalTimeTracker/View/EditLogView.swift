@@ -10,6 +10,7 @@ struct EditLogView: View {
     @State private var startDate: Date
     @State private var endDate: Date
     @State private var tagPath: String
+    @State private var timerEndDate: Date?
     
     init(log: CalendarEventLog, viewModel: CalendarEventLogViewModel) {
         self.log = log
@@ -19,6 +20,7 @@ struct EditLogView: View {
         _startDate = State(initialValue: log.startDate)
         _endDate = State(initialValue: log.endDate)
         _tagPath = State(initialValue: log.tagPath)
+        _timerEndDate = State(initialValue: log.timerEndDate)
     }
     
     var body: some View {
@@ -28,6 +30,15 @@ struct EditLogView: View {
                     DatePicker("Start Date", selection: $startDate)
                     DatePicker("End Date", selection: $endDate)
                     TextField("Tag Path", text: $tagPath)
+                    if let timerEndDate = timerEndDate {
+                        DatePicker("Timer End", selection: Binding(
+                            get: { timerEndDate },
+                            set: { self.timerEndDate = $0 }
+                        ))
+                    } else {
+                        Text("Timer is still running")
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             .padding()
@@ -53,7 +64,7 @@ struct EditLogView: View {
             title: title,
             startDate: startDate,
             endDate: endDate,
-            timerEndDate: log.timerEndDate,
+            timerEndDate: timerEndDate,
             tagPath: tagPath,
             tagColor: log.tagColor
         )
