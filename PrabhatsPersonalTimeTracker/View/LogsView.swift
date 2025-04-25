@@ -90,6 +90,7 @@ struct LogsTableView: View {
     @ObservedObject private var viewModel = CalendarEventLogViewModel.shared
     @Binding var selectedLogIds: Set<UUID>
     let onEdit: (CalendarEventLog) -> Void
+    @State private var logToDelete: CalendarEventLog?
     
     private var groupedLogs: [LogGroup] {
         let calendar = Calendar.current
@@ -127,16 +128,22 @@ struct LogsTableView: View {
                             
                             Menu {
                                 Button(action: {
+                                    onEdit(log)
+                                }) {
+                                    Label("Edit Event", systemImage: "pencil")
+                                }
+                                
+                                Button(action: {
                                     NSPasteboard.general.clearContents()
                                     NSPasteboard.general.setString(log.calendarEventId, forType: .string)
                                 }) {
                                     Label("Copy Event ID", systemImage: "doc.on.doc")
                                 }
                                 
-                                Button(action: {
-                                    onEdit(log)
+                                Button(role: .destructive, action: {
+                                    logToDelete = log
                                 }) {
-                                    Label("Edit Event", systemImage: "pencil")
+                                    Label("Delete Event", systemImage: "trash")
                                 }
                             } label: {
                                 Image(systemName: "ellipsis.circle")
@@ -145,9 +152,9 @@ struct LogsTableView: View {
                             .menuStyle(.borderlessButton)
                             .menuIndicator(.hidden)
                         }
-                        .frame(width: 60)
+                        .frame(width: 40)
                     }
-                    .width(60)
+                    .width(40)
                     
                     TableColumn("Title", value: \.title)
                     TableColumn("Tag Path", value: \.tagPath)
@@ -182,27 +189,42 @@ struct LogsTableView: View {
                     TableColumn("EventId") { log in
                         Text(log.calendarEventId)
                     }
-                }.overlay(alignment: .topLeading) {
-            if !viewModel.logs.isEmpty {
-                    Toggle("", isOn: Binding(
-                        get: { selectedLogIds.count == viewModel.logs.count },
-                        set: { isSelected in
-                            if isSelected {
-                                selectedLogIds = Set(viewModel.logs.map { $0.id })
-                            } else {
-                                selectedLogIds.removeAll()
+                }
+                .overlay(alignment: .topLeading) {
+                    if !group.logs.isEmpty {
+                        Toggle("", isOn: Binding(
+                            get: { group.logs.allSatisfy { selectedLogIds.contains($0.id) } },
+                            set: { isSelected in
+                                if isSelected {
+                                    selectedLogIds.formUnion(group.logs.map { $0.id })
+                                } else {
+                                    selectedLogIds.subtract(group.logs.map { $0.id })
+                                }
                             }
-                        }
-                    ))
-                    .toggleStyle(.checkbox)
-                    .labelsHidden()
-                .padding(.leading, 16)
-                .padding(.top, 8)
-            }
-        }
+                        ))
+                        .toggleStyle(.checkbox)
+                        .labelsHidden()
+                        .padding(.leading, 16)
+                        .padding(.top, 8)
+                    }
+                }
             }
         }
         .background(Color(NSColor.controlBackgroundColor))
+        .alert("Delete Event", isPresented: Binding(
+            get: { logToDelete != nil },
+            set: { if !$0 { logToDelete = nil } }
+        )) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                if let log = logToDelete {
+                    viewModel.deleteLog(calendarEventId: log.calendarEventId)
+                    selectedLogIds.remove(log.id)
+                }
+            }
+        } message: {
+            Text("Are you sure you want to delete this event? This action cannot be undone.")
+        }
     }
     
     private func formatDuration(from startDate: Date, to endDate: Date) -> String {
