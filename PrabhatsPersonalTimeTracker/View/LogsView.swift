@@ -89,8 +89,7 @@ struct LogsTableView: View {
     var body: some View {
         Table(viewModel.logs) {
             TableColumn("") { log in
-                HStack {
-                    Spacer()
+                HStack(spacing: 4) {
                     Toggle("", isOn: Binding(
                         get: { selectedLogIds.contains(log.id) },
                         set: { isSelected in
@@ -103,11 +102,30 @@ struct LogsTableView: View {
                     ))
                     .toggleStyle(.checkbox)
                     .labelsHidden()
-                    Spacer()
+                    
+                    Menu {
+                        Button(action: {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(log.calendarEventId, forType: .string)
+                        }) {
+                            Label("Copy Event ID", systemImage: "doc.on.doc")
+                        }
+                        
+                        Button(action: {
+                            onEdit(log)
+                        }) {
+                            Label("Edit Event", systemImage: "pencil")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .foregroundStyle(.secondary)
+                    }
+                    .menuStyle(.borderlessButton)
+                    .menuIndicator(.hidden)
                 }
-                .frame(width: 15)
+                .frame(width: 60)
             }
-            .width(15)
+            .width(60)
             
             TableColumn("Title", value: \.title)
             TableColumn("Start Time") { log in
@@ -141,20 +159,6 @@ struct LogsTableView: View {
             }
             TableColumn("EventId") { log in
                 Text(log.calendarEventId)
-                    .contextMenu {
-                        Button(action: {
-                            NSPasteboard.general.clearContents()
-                            NSPasteboard.general.setString(log.calendarEventId, forType: .string)
-                        }) {
-                            Label("Copy Event ID", systemImage: "doc.on.doc")
-                        }
-                        
-                        Button(action: {
-                            onEdit(log)
-                        }) {
-                            Label("Edit Event", systemImage: "pencil")
-                        }
-                    }
             }
         }
         .background(Color(NSColor.controlBackgroundColor))
