@@ -10,10 +10,11 @@ import SwiftUI
 @main
 struct PrabhatsPersonalTimeTrackerApp: App {
     @StateObject private var viewModel = CalendarEventLogViewModel.shared
-    private let menuBarStatusItem: MenuBarStatusItem
+    @StateObject private var menuBar: PlatformMenuBar
     
     init() {
-        menuBarStatusItem = MenuBarStatusItem(viewModel: CalendarEventLogViewModel.shared)
+        let menuBar = PlatformMenuBar(viewModel: CalendarEventLogViewModel.shared)
+        _menuBar = StateObject(wrappedValue: menuBar)
     }
     
     var body: some Scene {
@@ -21,7 +22,8 @@ struct PrabhatsPersonalTimeTrackerApp: App {
             ContentView()
                 .environmentObject(viewModel)
         }
+        #if os(macOS)
         .windowStyle(TitleBarWindowStyle())
-        // .windowStyle(HiddenTitleBarWindowStyle())
+        #endif
     }
 }
